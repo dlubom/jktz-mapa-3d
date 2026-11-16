@@ -46,6 +46,7 @@ jobs:
         run: |
           python -m unittest discover -s tests
           node --check app/jktz.js
+          node --experimental-vm-modules --test tests/loader_retry.cjs
       - name: Build the complete static site
         run: |
           python scripts/catalog.py build --inputs .build/inputs.json --cache .build/catalog --output .build/caves.json
