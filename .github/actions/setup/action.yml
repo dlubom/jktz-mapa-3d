@@ -7,7 +7,7 @@ runs:
       shell: bash
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends gcc libc6-dev python3-venv
+        sudo apt-get install -y --no-install-recommends ca-certificates gcc libc6-dev python3-venv
         /usr/bin/python3 -m venv .venv
         .venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
         echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
@@ -90,7 +90,8 @@ runs:
             cwd=source, check=True,
         )
         shutil.copyfile(source / "lib/en.msg", messages / "en.msg")
-        banner = subprocess.check_output([executable, "--version"], text=True).strip()
+        reader_env = dict(os.environ, PATH=f"{prefix / 'bin'}:{os.environ['PATH']}")
+        banner = subprocess.check_output(["dump3d", "--version"], env=reader_env, text=True).strip()
         if banner != f"dump3d - Survex {version}":
             raise SystemExit(f"Nieoczekiwana wersja czytnika: {banner}")
         with Path(os.environ["GITHUB_PATH"]).open("a") as path_file:
