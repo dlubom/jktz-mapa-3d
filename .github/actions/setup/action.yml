@@ -1,5 +1,5 @@
 name: Build tools
-description: Python and Survex for reading released 3D geometry
+description: Python 3.12 and the pinned Survex reader for released 3D geometry
 runs:
   using: composite
   steps:
@@ -7,9 +7,94 @@ runs:
       shell: bash
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends survex python3-venv
+        sudo apt-get install -y --no-install-recommends ca-certificates gcc libc6-dev python3-venv
         /usr/bin/python3 -m venv .venv
         .venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
         echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
-        dump3d --version
         .venv/bin/python --version
+    - name: Build pinned dump3d on Ubuntu 24.04 amd64
+      shell: bash
+      run: |
+        /usr/bin/python3 - <<'PY'
+        import hashlib
+        import json
+        import os
+        from pathlib import Path
+        import platform
+        import re
+        import shutil
+        import subprocess
+        import sys
+        import tarfile
+        import tempfile
+        import time
+        import urllib.request
+
+        if (platform.system(), platform.machine(), sys.byteorder) != (
+            "Linux", "x86_64", "little"
+        ) or sys.version_info[:2] != (3, 12):
+            raise SystemExit("Ten build wymaga Ubuntu 24.04 amd64 i Python 3.12")
+        manifest = json.loads(Path("data/survex-source.json").read_text())
+        version = manifest["version"]
+        build = Path(tempfile.mkdtemp(prefix="jktz-survex-", dir=os.environ["RUNNER_TEMP"]))
+        archive = build / "source.tar.gz"
+        with urllib.request.urlopen(manifest["url"], timeout=60) as response:
+            archive.write_bytes(response.read())
+        content = archive.read_bytes()
+        if len(content) != manifest["bytes"] or hashlib.sha256(content).hexdigest() != manifest["sha256"]:
+            raise SystemExit("Niezgodny rozmiar lub SHA-256 źródeł Survex")
+        with tarfile.open(archive) as package:
+            package.extractall(build, filter="data")
+        source = build / f"survex-{version}"
+        configure = (source / "configure.ac").read_text()
+        if f"AC_INIT([survex], [{version}]," not in configure:
+            raise SystemExit("Wersja źródeł Survex nie odpowiada manifestowi")
+        copyright_message = re.search(r'^COPYRIGHT_MSG="([^"]+)"$', configure, re.M).group(1)
+        prefix = Path(os.environ["RUNNER_TEMP"]) / f"jktz-survex-reader-{version}"
+        (prefix / "bin").mkdir(parents=True, exist_ok=True)
+        messages = prefix / "share/survex"
+        messages.mkdir(parents=True, exist_ok=True)
+
+        # Minimalny config.h dla tego runnera. Pełne configure wymaga bibliotek
+        # GUI/GDAL/PROJ, których dump3d nie używa. Lista źródeł pochodzi z
+        # upstream src/Makefile.am: dump3d_SOURCES i COMMONSRC; bez zmian w C.
+        definitions = {
+            "PACKAGE": '"survex"',
+            "PRETTYPACKAGE": '"Survex"',
+            "VERSION": json.dumps(version),
+            "PACKAGE_VERSION": json.dumps(version),
+            "COPYRIGHT_MSG": json.dumps(copyright_message),
+            "HAVE_STRING_H": "1",
+            "HAVE_STDINT_H": "1",
+            "HAVE_STRDUP": "1",
+            "HAVE_HYPOT": "1",
+            "DATADIR": json.dumps(str(prefix / "share")),
+        }
+        config = (source / "config.h.in").read_text()
+        for name, value in definitions.items():
+            config, count = re.subn(
+                rf"^#undef {name}$", lambda _: f"#define {name} {value}", config, flags=re.M
+            )
+            if count != 1:
+                raise SystemExit(f"Nieoczekiwany szablon config.h: {name}")
+        (source / "config.h").write_text(config)
+        source_names = (
+            "dump3d", "date", "img_for_survex", "cmdline", "message",
+            "str", "filename", "z_getopt", "getopt1",
+        )
+        executable = prefix / "bin/dump3d"
+        started = time.monotonic()
+        subprocess.run(
+            ["cc", "-std=gnu11", "-O2", "-DHAVE_CONFIG_H", "-I", ".", "-I", "src",
+             *(f"src/{name}.c" for name in source_names), "-lm", "-o", str(executable)],
+            cwd=source, check=True,
+        )
+        shutil.copyfile(source / "lib/en.msg", messages / "en.msg")
+        reader_env = dict(os.environ, PATH=f"{prefix / 'bin'}:{os.environ['PATH']}")
+        banner = subprocess.check_output(["dump3d", "--version"], env=reader_env, text=True).strip()
+        if banner != f"dump3d - Survex {version}":
+            raise SystemExit(f"Nieoczekiwana wersja czytnika: {banner}")
+        with Path(os.environ["GITHUB_PATH"]).open("a") as path_file:
+            path_file.write(f"{prefix / 'bin'}\n")
+        print(f"{banner}; build {time.monotonic() - started:.2f} s; SHA-256 {manifest['sha256']}")
+        PY

@@ -55,7 +55,11 @@ class SiteTests(unittest.TestCase):
                             "tag": "v99.1",
                             "url": "https://github.com/dlubom/Jaskiniowy-Kataster-Tatr-Zachodnich/releases/tag/v99.1",
                         },
-                        "asset": {"id": 42, "name": "JKTZ-v99.1.zip", "sha256": "b" * 64},
+                        "asset": {
+                            "id": 42,
+                            "name": "JKTZ-v99.1.zip",
+                            "sha256": "b" * 64,
+                        },
                     },
                 }
             )
@@ -112,7 +116,9 @@ class SiteTests(unittest.TestCase):
         publication = json.loads((self.output / "publication.json").read_text())
         self.assertEqual(publication["catalog"]["version"], "v99.1")
         self.assertEqual(publication["commit"], "c" * 40)
-        self.assertIn("url=vendor/potree-next/jktz.html", (self.output / "index.html").read_text())
+        self.assertIn(
+            "url=vendor/potree-next/jktz.html", (self.output / "index.html").read_text()
+        )
         self.assertTrue(verify(self.output)["files"] > 100)
 
     def test_tampered_site_is_rejected(self):
@@ -171,7 +177,9 @@ class SiteTests(unittest.TestCase):
                 path.write_bytes(b"x" * len(original))
                 try:
                     with self.assertRaisesRegex(ValueError, "SHA-256"):
-                        build(self.caves, self.inputs, self.terrain, self.output, "local")
+                        build(
+                            self.caves, self.inputs, self.terrain, self.output, "local"
+                        )
                     self.assertFalse((self.output / "checksums.json").exists())
                 finally:
                     path.write_bytes(original)

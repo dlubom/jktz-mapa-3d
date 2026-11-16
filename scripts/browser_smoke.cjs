@@ -6,7 +6,7 @@ const output=path.resolve(process.env.BROWSER_OUTPUT||'output/playwright');
 fs.mkdirSync(output,{recursive:true});
 const state=page=>page.evaluate(()=>{const s=jktz.getState();delete s.frames;return s;});
 async function settled(page){
-  await page.waitForFunction(()=>window.jktz?.getState().ready,null,{timeout:120000});
+  await page.waitForFunction(()=>{const s=window.jktz?.getState();return s?.ready || s?.failures?.length;},null,{timeout:120000});
   let last=-1,same=0;
   for(let i=0;i<120;i++){
     await page.waitForTimeout(250);const s=await state(page);
@@ -18,10 +18,12 @@ async function settled(page){
 }
 (async()=>{
   const browser=await chromium.launch({channel:'chrome',headless:false});
+  let page;const errors=[], responses=[], invalidHeaders=[];
   try{
     const context=await browser.newContext({viewport:{width:1400,height:900},deviceScaleFactor:1});
-    const page=await context.newPage(), errors=[], responses=[];
+    page=await context.newPage();
     page.on('pageerror',e=>errors.push(e.message));
+    context.on('request',r=>{if(r.headers()['content-type']==='multipart/byteranges')invalidHeaders.push(r.url());});
     context.on('response',r=>responses.push({url:r.url(),status:r.status()}));
     await page.goto(url);const initial=await settled(page);
     const publication=await (await page.request.get(new URL('publication.json',url).href)).json();
@@ -47,10 +49,16 @@ async function settled(page){
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.setViewportSize({width:1400,height:900});await page.reload();const reload=await settled(page);
     assert.equal(errors.length,0,errors.join('; '));
+    assert.deepEqual(invalidHeaders,[],'GET Range must not send a multipart Content-Type');
     assert(responses.every(r=>[200,206].includes(r.status)),JSON.stringify(responses.filter(r=>r.status>=400)));
     assert(responses.every(r=>new URL(r.url).origin===new URL(url).origin));
     fs.writeFileSync(path.join(output,'result.json'),JSON.stringify({status:'PASS',url,browser:browser.version(),publication,initial,views,reload,responses,errors,mobile:'Viewport emulation only; no physical phone test'},null,2));
     console.log(JSON.stringify({status:'PASS',url,browser:browser.version(),commit:publication.commit,catalog:publication.catalog.version,legs:publication.counts.legs,output}));
     await context.close();
+  }catch(error){
+    const current=page ? await state(page).catch(()=>null) : null;
+    fs.writeFileSync(path.join(output,'failure.json'),JSON.stringify({status:'FAIL',url,error:String(error),state:current,errors,responses,invalidHeaders},null,2));
+    if(page)await page.screenshot({path:path.join(output,'failure.png')}).catch(()=>{});
+    throw error;
   }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

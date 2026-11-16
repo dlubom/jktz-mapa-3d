@@ -20,6 +20,10 @@ patches["src/potree/octree/PointCloudOctree.js"] = [
 ]
 patches["src/potree/octree/loader/PotreeLoader.js"] = [
     (
+        "\t\t\t\t'content-type': 'multipart/byteranges',\n",
+        "",
+    ),
+    (
         "\t\tlet buffer = await response.arrayBuffer();\n\n\t\tthis.parseHierarchy(node, buffer);",
         "\t\tif (response.status !== 206) throw new Error(`Hierarchy Range HTTP ${response.status}`);\n\t\tlet buffer = await response.arrayBuffer();\n\t\tif (buffer.byteLength !== Number(node.hierarchyByteSize)) throw new Error('Incomplete hierarchy Range');\n\n\t\tthis.parseHierarchy(node, buffer);",
     ),
@@ -37,6 +41,10 @@ patches["src/potree/octree/loader/PotreeLoader.js"] = [
     ),
 ]
 patches["src/potree/octree/loader/DecoderWorker_default.js"] = [
+    (
+        "\t\t\t\t'content-type': 'multipart/byteranges',\n",
+        "",
+    ),
     (
         "\t\tbuffer = await response.arrayBuffer();",
         "\t\tif (response.status !== 206) throw new Error(`Point Range HTTP ${response.status}`);\n\t\tbuffer = await response.arrayBuffer();\n\t\tif (buffer.byteLength !== Number(byteSize)) throw new Error('Incomplete point Range');",
