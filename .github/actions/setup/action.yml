@@ -1,0 +1,15 @@
+name: Build tools
+description: Python and Survex for reading released 3D geometry
+runs:
+  using: composite
+  steps:
+    - name: Install data tools
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends survex python3-venv
+        /usr/bin/python3 -m venv .venv
+        .venv/bin/python -m pip install --disable-pip-version-check -r requirements.txt
+        echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+        dump3d --version
+        .venv/bin/python --version

@@ -1,0 +1,80 @@
+{
+  "archive": {
+    "bytes": 203513837,
+    "name": "terrain-als2025-v1.zip",
+    "sha256": "a87e5cb5c41c59b5087a4476beaa9cdea47785c8d68e9d42357bf0d8a3b8556a",
+    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/download/terrain-2025-v1/terrain-als2025-v1.zip"
+  },
+  "clouds": {
+    "kozia": {
+      "metadata": "kozia/metadata.json",
+      "points": 8820406,
+      "source": "ALS2025groundclass2"
+    },
+    "regional": {
+      "metadata": "regional/metadata.json",
+      "points": 3860578,
+      "source": "ALS2025-derivedNMT4m"
+    }
+  },
+  "files": {
+    "coverage-mask.bin.gz": {
+      "bytes": 32242,
+      "sha256": "834742da25e1895b23f71398e78072ca7c3fb9e6196f5864db71d13c1232a38c"
+    },
+    "kozia/hierarchy.bin": {
+      "bytes": 73854,
+      "sha256": "960728e9e2be245d0202ae2194c9146421bb8683101ceeb80da75e15952b6f3c"
+    },
+    "kozia/metadata.json": {
+      "bytes": 3372,
+      "sha256": "f08b0a0e08e2b7dedd89663fe207ed5f5772a2196a0efa9c5eeef6fb228191c4"
+    },
+    "kozia/octree.bin": {
+      "bytes": 308714210,
+      "sha256": "3588036fe019529c5213c182077fdb4724f2c87d9e0e646949594f98a957d8b9"
+    },
+    "provenance/LICENSE-PotreeConverter.txt": {
+      "bytes": 1267,
+      "sha256": "37fa9d7bd72c9e2ebfbc5e3414ac0868dee7df67224939f2aac8565b8f10e913"
+    },
+    "provenance/converter-macos.patch": {
+      "bytes": 7574,
+      "sha256": "52bf1d64b8cc1a187ebd3519b6519b952771dd1949674c03cb48f8921009fd16"
+    },
+    "provenance/lidar2025-index.gml": {
+      "bytes": 485272,
+      "sha256": "e346e65529219fcddc82875da9dd20a0ef95de4189d3ba837552caf674ecdc1f"
+    },
+    "provenance/nmt2025-index.gml": {
+      "bytes": 48792,
+      "sha256": "8cc7962e2d9f9bd1e17d75154e0654b4d180c2a6f37a65106474ff3fb07edaab"
+    },
+    "regional/hierarchy.bin": {
+      "bytes": 44330,
+      "sha256": "fedf174bef99ef74c26e3df4c0e31bbafb195302930f8ef82bf31c08575b75fb"
+    },
+    "regional/metadata.json": {
+      "bytes": 3309,
+      "sha256": "f3e4ee0f1b03cd3932756a63e8a9e184ccceafb5ee1ec27e3802518b3316ff6b"
+    },
+    "regional/octree.bin": {
+      "bytes": 135120230,
+      "sha256": "975318243054addc42b2d04f2539b318262a6ba23cd6066a71095f56acc91282"
+    },
+    "terrain-mask.json": {
+      "bytes": 859,
+      "sha256": "118978ee5c939e6775555129e94aabd0c3bc7a5063a1132ceab5bbbe885af6d0"
+    },
+    "terrain-provenance.json": {
+      "bytes": 43929,
+      "sha256": "4a2e51c5c5f5737dba4474a6b87f1b2e266b2cf75c1d19573729b2d36c1eb318"
+    }
+  },
+  "release": {
+    "tag": "terrain-2025-v1",
+    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/tag/terrain-2025-v1"
+  },
+  "schema_version": 1,
+  "terrain_version": "terrain-2025-v1"
+}
