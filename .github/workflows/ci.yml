@@ -18,4 +18,5 @@ jobs:
         run: |
           python -m unittest discover -s tests
           node --check app/jktz.js
+          node --experimental-vm-modules --test tests/loader_retry.cjs
           node --check scripts/browser_smoke.cjs

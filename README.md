@@ -61,6 +61,7 @@ publicznego GitHub API; nie jest zapisywany w artefaktach ani wysyłany z ZIP.
 
 ```sh
 python -m unittest discover -s tests
+node --experimental-vm-modules --test tests/loader_retry.cjs
 python scripts/site.py verify
 npm ci
 node scripts/browser_smoke.cjs http://127.0.0.1:8768/jktz-mapa-3d/
@@ -73,7 +74,8 @@ GPU. Mały viewport nie jest testem fizycznego telefonu.
 
 Zmiany rozwijamy przez PR. `check` jest wymaganą kontrolą przed scaleniem.
 Zachowane poprawki Potree dotyczą budżetu punktów, błędów pobierania,
-żądań Range zgodnych z GitHub Pages, zmniejszania okna i wyłączenia
+żądań Range zgodnych z GitHub Pages, ponawiania przerwanych pobrań,
+zmniejszania okna i wyłączenia
 nieużywanego loadera LAS. Ograniczenie dekodera
 do równych skal XYZ i offset=min jest sprawdzane podczas builda.
 

@@ -20,6 +20,10 @@ patches["src/potree/octree/PointCloudOctree.js"] = [
 ]
 patches["src/potree/octree/loader/PotreeLoader.js"] = [
     (
+        "\t\t\t\tlet geometry = new Geometry();\n",
+        "\t\t\t\tnode.loadAttempts = 0;\n\t\t\t\tlet geometry = new Geometry();\n",
+    ),
+    (
         "\t\t\t\t'content-type': 'multipart/byteranges',\n",
         "",
     ),
@@ -29,11 +33,11 @@ patches["src/potree/octree/loader/PotreeLoader.js"] = [
     ),
     (
         '\t\t\t\tif(data === "failed"){\n',
-        '\t\t\t\tif(data === "failed"){\n\t\t\t\t\tnode.loadAttempts = (node.loadAttempts || 0) + 1;\n\t\t\t\t\tthis.error = `Nie udało się odczytać fragmentu chmury ${node.name}. Sprawdź HTTP Range i odśwież stronę.`;\n',
+        '\t\t\t\tif(data === "failed"){\n\t\t\t\t\tnode.loadAttempts = (node.loadAttempts || 0) + 1;\n\t\t\t\t\tif (node.loadAttempts > 5) this.error = `Nie udało się odczytać fragmentu chmury ${node.name}. Sprawdź HTTP Range i odśwież stronę.`;\n',
     ),
     (
         "\t\t}catch(e){\n\t\t\tdebugger;",
-        "\t\t}catch(e){\n\t\t\tnode.loadAttempts = (node.loadAttempts || 0) + 1;\n\t\t\tthis.error = `Nie udało się odczytać hierarchii ${node.name}: ${e.message || e}`;",
+        "\t\t}catch(e){\n\t\t\tnode.loadAttempts = (node.loadAttempts || 0) + 1;\n\t\t\tif (node.loadAttempts > 5) this.error = `Nie udało się odczytać hierarchii ${node.name}: ${e.message || e}`;",
     ),
     (
         "\t\tlet response = await fetch(url);\n\t\tlet metadata = await response.json();",
