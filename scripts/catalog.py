@@ -1,6 +1,6 @@
 """Pin and build the current stable JKTZ catalogue without changing survey Z.
 
-Python 3.12+, pyproj and Survex dump3d are required for a complete build.
+Python 3.12+, pyproj and Survex dump3d exactly 1.4.24 are required for a build.
 Run from the repository root:
     python scripts/catalog.py resolve --output .build/inputs.json
     python scripts/catalog.py build --inputs .build/inputs.json \
@@ -39,6 +39,7 @@ from pathlib import Path
 REPOSITORY = "dlubom/Jaskiniowy-Kataster-Tatr-Zachodnich"
 API_URL = f"https://api.github.com/repos/{REPOSITORY}/releases/latest"
 ORIGIN = [566000, 153000, 0]
+REQUIRED_SURVEX_VERSION = "1.4.24"
 VERTICAL_DATUM = (
     "Original compiled JKTZ Z preserved unchanged; vertical-datum provenance "
     "of the complete release is not established. No terrain fitting or height shift."
@@ -351,9 +352,23 @@ def build_catalog(inputs, cache, output):
     pin = validate_inputs(json.loads(Path(inputs).read_text(encoding="utf-8")))[
         "catalog"
     ]
+    environment = dict(os.environ, LC_ALL="C")
+    version = subprocess.run(
+        ["dump3d", "--version"],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=environment,
+    ).stdout.strip()
+    # 1.4.4 ignores the stored v8 separator; other versions need qualification.
+    if version != f"dump3d - Survex {REQUIRED_SURVEX_VERSION}":
+        raise ValueError(
+            f"Qualified reader required: Survex {REQUIRED_SURVEX_VERSION}; "
+            f"found {version!r}"
+        )
     archive = fetch_asset(pin["asset"], cache)
     member, model = read_model(archive)
-    environment = dict(os.environ, LC_ALL="C")
     with tempfile.TemporaryDirectory(prefix="jktz-catalog-") as work:
         compiled = Path(work) / "catalog.3d"
         compiled.write_bytes(model)
@@ -365,14 +380,6 @@ def build_catalog(inputs, cache, output):
             encoding="utf-8",
             env=environment,
         ).stdout
-        version = subprocess.run(
-            ["dump3d", "--version"],
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            env=environment,
-        ).stdout.strip()
     source = {
         "version": pin["release"]["tag"],
         "releaseUrl": pin["release"]["url"],

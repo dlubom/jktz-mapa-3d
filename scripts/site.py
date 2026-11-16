@@ -44,8 +44,13 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
             if not (output / "data" / cloud / name).is_file():
                 raise ValueError(f"Missing terrain {cloud}/{name}")
         metadata = json.loads((output / "data" / cloud / "metadata.json").read_text())
-        if len(set(metadata["scale"])) != 1 or metadata["offset"] != metadata["boundingBox"]["min"]:
-            raise ValueError("Unsupported coordinate metadata for pinned Potree decoder")
+        if (
+            len(set(metadata["scale"])) != 1
+            or metadata["offset"] != metadata["boundingBox"]["min"]
+        ):
+            raise ValueError(
+                "Unsupported coordinate metadata for pinned Potree decoder"
+            )
     coverage = json.loads((output / "data/coverage.json").read_text())
     try:
         release, asset = inputs["catalog"]["release"], inputs["catalog"]["asset"]
@@ -77,7 +82,10 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
         for cloud in ["kozia", "regional"]
         for name in ["metadata.json", "hierarchy.bin", "octree.bin"]
     }
-    if not isinstance(terrain_files, dict) or not required_files <= terrain_files.keys():
+    if (
+        not isinstance(terrain_files, dict)
+        or not required_files <= terrain_files.keys()
+    ):
         raise ValueError("Incomplete terrain file manifest")
     for record in terrain_files.values():
         check_record(record)
@@ -116,7 +124,9 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
     (output / "data/caves.json").write_text(
         json.dumps(model, ensure_ascii=False, separators=(",", ":"))
     )
-    (output / "inputs.json").write_text(json.dumps(inputs, ensure_ascii=False, indent=2) + "\n")
+    (output / "inputs.json").write_text(
+        json.dumps(inputs, ensure_ascii=False, indent=2) + "\n"
+    )
     publication = {
         "schemaVersion": 1,
         "builtAt": datetime.now(timezone.utc).isoformat(),
@@ -144,7 +154,9 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
     }
     if sum(row["bytes"] for row in files.values()) >= 1_000_000_000:
         raise ValueError("Site exceeds the 1 GB Pages budget")
-    (output / "checksums.json").write_text(json.dumps({"files": files}, indent=2) + "\n")
+    (output / "checksums.json").write_text(
+        json.dumps({"files": files}, indent=2) + "\n"
+    )
     return verify(output)
 
 

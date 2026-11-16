@@ -167,7 +167,7 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(command[0], "dump3d")
             if command[1] == "--version":
                 return subprocess.CompletedProcess(
-                    command, 0, "dump3d - Survex 1.4.4\n", ""
+                    command, 0, "dump3d - Survex 1.4.24\n", ""
                 )
             self.assertEqual(command[1], "--legs")
             self.assertEqual(Path(command[2]).read_bytes(), b"small compiled fixture")
@@ -186,7 +186,60 @@ class CatalogTests(unittest.TestCase):
             result["source"]["modelSHA256"],
             hashlib.sha256(b"small compiled fixture").hexdigest(),
         )
-        self.assertIn("1.4.4", result["source"]["dump3dVersion"])
+        self.assertEqual(result["source"]["dump3dVersion"], "dump3d - Survex 1.4.24")
+
+    def test_unqualified_reader_stops_before_download_and_preserves_existing_output(
+        self,
+    ):
+        inputs, output = self.root / "inputs.json", self.root / "caves.json"
+        with patch(
+            "urllib.request.urlopen",
+            return_value=io.BytesIO(json.dumps(release()).encode()),
+        ):
+            catalog.resolve_inputs(inputs)
+        output.write_text("previous verified build")
+        legacy_dump = FIXTURE.read_text().replace("SEPARATOR ':'", "SEPARATOR '.'")
+        for version in ["1.4.4", "1.4.25", "1.4.24dev"]:
+            with self.subTest(version=version):
+
+                def reader(command, reader_version=version, **kwargs):
+                    text = (
+                        f"dump3d - Survex {reader_version}\n"
+                        if command[1] == "--version"
+                        else legacy_dump
+                    )
+                    return subprocess.CompletedProcess(command, 0, text, "")
+
+                with (
+                    patch("subprocess.run", side_effect=reader) as tool,
+                    patch(
+                        "urllib.request.urlopen",
+                        side_effect=AssertionError(
+                            "An unqualified reader must not fetch assets"
+                        ),
+                    ),
+                ):
+                    with self.assertRaisesRegex(ValueError, "Survex 1.4.24"):
+                        catalog.build_catalog(inputs, self.root / "cache", output)
+                self.assertEqual(
+                    [call.args[0] for call in tool.call_args_list],
+                    [["dump3d", "--version"]],
+                )
+                self.assertEqual(output.read_text(), "previous verified build")
+                self.assertFalse((self.root / "cache").exists())
+
+    def test_colon_header_groups_sections_without_splitting_dotted_station_names(self):
+        dump = FIXTURE.read_text().replace("[Beta]", "[Alpha:side]")
+        dump = dump.replace("[Alpha:section:1]", "[Alpha:section:1.2]")
+        result = catalog.geometry_from_dump(dump, {})
+        groups = {group["id"]: group for group in result["groups"]}
+        self.assertEqual(set(groups), {"Alpha", "_unscoped"})
+        self.assertEqual(
+            groups["Alpha"]["surveyLabels"], ["Alpha:survey", "Alpha:side"]
+        )
+        self.assertEqual(len(groups["Alpha"]["legs"]), 2)
+        self.assertEqual(result["counts"]["legs"], 3)
+        self.assertEqual(result["stations"][1]["name"], "Alpha:section:1.2")
 
     def test_release_selection_rejects_unstable_missing_ambiguous_or_unhashed_assets(
         self,

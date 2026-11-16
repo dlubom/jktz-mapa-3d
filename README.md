@@ -28,9 +28,12 @@ Jest to chmura punktów gruntu, nie zamknięta bryła terenu ani model ścian ja
 
 ## Lokalnie
 
-Python 3.12+, `dump3d` z Survex 1.4.4 lub nowszego, działające WebGPU.
-Ubuntu 24.04: `sudo apt-get install --no-install-recommends survex python3-venv`.
-macOS: `brew install survex`. Nie jest potrzebna kompilacja katastru w Walls.
+Python 3.12+, przypięty `dump3d` z Survex 1.4.24, działające WebGPU.
+Ubuntu 24.04: zbuduj przypięty czytnik według
+`.github/actions/setup/action.yml`; pakiet `survex` z dystrybucji jest za stary.
+macOS: `brew install survex`, następnie sprawdź `dump3d --version`.
+Czytnik 1.4.24 jest zapisany w manifeście narzędzia; nie jest potrzebna
+kompilacja katastru w Walls.
 
 ```sh
 python3 -m venv .venv
@@ -70,7 +73,8 @@ GPU. Mały viewport nie jest testem fizycznego telefonu.
 
 Zmiany rozwijamy przez PR. `check` jest wymaganą kontrolą przed scaleniem.
 Zachowane poprawki Potree dotyczą budżetu punktów, błędów pobierania,
-zmniejszania okna i wyłączenia nieużywanego loadera LAS. Ograniczenie dekodera
+żądań Range zgodnych z GitHub Pages, zmniejszania okna i wyłączenia
+nieużywanego loadera LAS. Ograniczenie dekodera
 do równych skal XYZ i offset=min jest sprawdzane podczas builda.
 
 ## Publikacja
