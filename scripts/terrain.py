@@ -233,18 +233,25 @@ def covered(metadata: dict, bits: bytes, x: float, y: float) -> bool:
 
 def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
     metadata, bits = load_mask(terrain_dir)
-    comparison = None
-    if "comparison_mask" in metadata:
-        comparison = load_mask(terrain_dir, metadata["comparison_mask"])
-        if comparison[0]["vertical_datum"] != metadata["vertical_datum"]:
+    other_masks = {}
+    for key in ("comparison_mask", "supplement_mask"):
+        if key not in metadata:
+            continue
+        other_masks[key] = load_mask(terrain_dir, metadata[key])
+        if (
+            key == "comparison_mask"
+            and other_masks[key][0]["vertical_datum"] != metadata["vertical_datum"]
+        ):
             raise ValueError("Native terrain masks must use the same vertical datum")
+    comparison = other_masks.get("comparison_mask")
+    supplement = other_masks.get("supplement_mask")
     caves = json.loads(caves_path.read_text(encoding="utf-8"))
     if caves.get("crs") != metadata["crs"] or not isinstance(
         caves.get("stations"), list
     ):
         raise ValueError("Cave stations must use EPSG:2180 and contain a stations list")
     groups = {}
-    count = 0
+    count = extra_count = 0
     old_count = added = lost = 0
     for station in caves["stations"]:
         position = station["position"]
@@ -252,10 +259,13 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
             isinstance(v, (int, float)) and math.isfinite(v) for v in position
         ):
             raise ValueError("Station position must contain three finite coordinates")
-        good = covered(metadata, bits, position[0], position[1])
+        good = covered(metadata, bits, *position[:2])
+        if not good and supplement is not None:
+            good = covered(*supplement, *position[:2])
+            extra_count += good
         count += good
         if comparison is not None:
-            old = covered(*comparison, position[0], position[1])
+            old = covered(*comparison, *position[:2])
             old_count += old
             added += good and not old
             lost += old and not good
@@ -306,13 +316,23 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
         "by_group": groups,
         "valid_native_area_km2": area,
         "method": (
-            "Valid native NMT cell under each station XY; duplicate station records retained; "
+            "Valid terrain cell under each station XY; duplicate station records retained; "
             "no elevation accuracy claim"
         ),
-        "description": (
-            f"{source} obejmuje {summary}. Ważne komórki zajmują {area:.2f} km²."
-        ),
+        "description": (f"{source} obejmuje {summary}."),
     }
+    if supplement is not None:
+        dmr = supplement[0]
+        result["dmr5"] = {
+            "nmt2019Stations": count - extra_count,
+            "additionalStations": extra_count,
+            "validAreaKm2": dmr["valid_cells"]
+            * abs(dmr["geotransform"][1] * dmr["geotransform"][5])
+            / 1e6,
+        }
+        result["description"] += (
+            f" DMR 5.0 uzupełnia teren nad {number(extra_count)} stacjami."
+        )
     if comparison is not None:
         result["als2025"] = {
             "coveredStations": old_count,

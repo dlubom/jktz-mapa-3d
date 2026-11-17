@@ -294,6 +294,42 @@ class NativeCoverageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "finite"):
             terrain.coverage(self.root, source, self.root / "coverage.json")
 
+    def test_dmr_supplement_only_adds_stations_in_nmt_gaps(self):
+        save_json(
+            self.root / "terrain-mask.json",
+            dict(self.metadata, supplement_mask="dmr5-mask.json"),
+        )
+        bits = bytes([0b11010000])
+        compressed = gzip.compress(bits, mtime=0)
+        (self.root / "dmr5-mask.bin.gz").write_bytes(compressed)
+        save_json(
+            self.root / "dmr5-mask.json",
+            dict(
+                self.metadata,
+                file="dmr5-mask.bin.gz",
+                compressed=record(compressed),
+                uncompressed_sha256=hashlib.sha256(bits).hexdigest(),
+            ),
+        )
+        source = self.root / "caves.json"
+        save_json(
+            source,
+            {
+                "crs": "EPSG:2180",
+                "stations": [
+                    {"name": "PL:overlap", "position": [10.5, 19.5, 0]},
+                    {"name": "SK:only", "position": [11.5, 19.5, 0]},
+                    {"name": "PL:only", "position": [12.5, 19.5, 0]},
+                    {"name": "Other:missing", "position": [12.5, 18.5, 0]},
+                ],
+            },
+        )
+        result = terrain.coverage(self.root, source, self.root / "coverage.json")
+        self.assertEqual(result["coveredStations"], 3)
+        self.assertEqual(result["by_group"]["SK"]["covered"], 1)
+        self.assertEqual(result["dmr5"]["additionalStations"], 1)
+        self.assertEqual(result["dmr5"]["nmt2019Stations"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

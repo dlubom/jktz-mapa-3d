@@ -1,0 +1,43 @@
+{
+  "retrieved": "2026-11-17",
+  "attribution": "Geodetický a kartografický ústav Bratislava (GKÚ Bratislava)",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "dmr": {
+    "name": "dmr5-tatry.tif",
+    "url": "https://inspirews.skgeodesy.sk/geoserver/el/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=el__EL.GridCoverage&subset=E%28420400%2C422450%29&subset=N%285452750%2C5454000%29&format=image%2Ftiff",
+    "bytes": 15729178,
+    "sha256": "701e733f74b3018ec68c52d3616a93c57c0ae9ac59b5b9bd96bfd7890167fcb9",
+    "crs": "EPSG:3046",
+    "height": "ETRS89-h / GRS80",
+    "terms": "https://www.skgeodesy.sk/geoportal/inspire/ukladacie-sluzby/",
+    "metadata": "https://data.gov.sk/set/data/gmd/f3d323e2-1a59-4e20-abdd-65526038dc48"
+  },
+  "quasigeoid": {
+    "name": "slovakia_etrs89h_to_evrf2007.zip",
+    "url": "https://www.gku.sk/files/gku/produkty-sluzby/na-stiahnutie/slovakia_etrs89h_to_evrf2007.zip",
+    "bytes": 1085422,
+    "sha256": "4af6b33d2070c1a90c8646a588358149fc7b513e85bdca497d204a7c3a719227",
+    "model": "DMQSK2014-E",
+    "operation": "EPSG:8362",
+    "targetHeight": "EPSG:5621",
+    "terms": "https://www.gku.sk/gku/produkty-sluzby/na-stiahnutie/geodeticke-zaklady.html",
+    "grid": {
+      "name": "Slovakia_ETRS89h_to_EVRF2007.gtx",
+      "bytes": 1394216,
+      "sha256": "fa4fc2e1b994ee8ac8db6eb3f75e5c1c93ca4ebad078000abc2e078c4364b32b"
+    }
+  },
+  "target_grid": {
+    "crs": "EPSG:2180",
+    "geotransform": [
+      565977.5,
+      1,
+      0,
+      152238.5,
+      0,
+      -1
+    ],
+    "width": 2084,
+    "height": 1306
+  }
+}

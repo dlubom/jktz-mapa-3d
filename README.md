@@ -15,15 +15,16 @@ Apple M4. Nie ma fallbacku WebGL; fizycznych telefonów nie zakwalifikowano.
 - **Kataster:** najnowszy stabilny GitHub Release JKTZ, rozpoznawany przy każdym
   nowym uruchomieniu publikacji. Build zachowuje ID wydania i zasobu, tag,
   SHA-256 paczki i modelu. Nie czyta modelu z ruchomej witryny Pages.
-- **Widok regionalny:** NMT GUGiK ze zdjęć lotniczych z 2019 r., siatka 5 m.
-  Dla JKTZ v2.0.1 obejmuje 18 323 z 18 541 stacji (98,8%). Brak danych nad
-  Nova Kresanica i Občasná Vyvieračka.
+- **Widok regionalny:** NMT GUGiK 2019 (siatka 5 m) i DMR 5.0 GKÚ (1 m)
+  w lukach przy Nova Kresanica i Občasná Vyvieračka. Razem obejmują
+  wszystkie 18 541 stacji JKTZ v2.0.1.
 - **ALS 2025:** szczegół Koziej zawiera 8 820 406 punktów gruntu z RGB.
   Osobna warstwa regionalna zawiera 3 860 578 węzłów NMT co 4 m i obejmuje
   35,3% stacji. Build przelicza pokrycie dla aktualnego modelu.
   [Pochodzenie i odtworzenie terenu](docs/TERRAIN.md).
-- XY sceny: EPSG:2180; Z terenu: PL-EVRF2007-NH. Z modelu zachowano ze źródła;
-  zgodność datum całego modelu pozostaje niepotwierdzona.
+- XY sceny: EPSG:2180. Z terenu: PL-EVRF2007-NH dla GUGiK, EVRF2007
+  dla DMR. Wysokości poligonów pochodzą z katastru. Zgodność datum całego
+  modelu jaskiń wymaga potwierdzenia.
 
 Aktualne przypięcia i SHA kodu: [publication.json](https://dlubom.github.io/jktz-mapa-3d/publication.json).
 Jest to chmura punktów gruntu, nie zamknięta bryła terenu ani model ścian jaskiń.
@@ -50,7 +51,7 @@ python scripts/serve.py
 ```
 
 Adres: <http://127.0.0.1:8768/jktz-mapa-3d/>. Pierwsze pobranie obejmuje paczkę
-terenu i model katastru. Gotowa witryna zajmuje około 617 MB. `site.py build`
+terenu i model katastru. Gotowa witryna zajmuje około 710 MB. `site.py build`
 odtwarza aplikację i zachowuje przygotowane chmury. Pliki źródłowe katastru
 i chmur pozostają nienaruszone.
 
@@ -104,5 +105,6 @@ Interfejs wskazuje źródła konkretnego opublikowanego SHA.
 
 Poligony: autorzy Jaskiniowego Katastru Tatr Zachodnich, **CC BY-SA 4.0**,
 zgodnie z wydaniem źródłowym. Teren pochodzi z **GUGiK / Państwowego Zasobu
-Geodezyjnego i Kartograficznego**. [Warunki i pochodzenie](docs/TERRAIN.md).
+Geodezyjnego i Kartograficznego** oraz **GKÚ Bratislava**.
+[Warunki i pochodzenie](docs/TERRAIN.md).
 Licencja kodu nie zmienia warunków danych.

@@ -28,8 +28,8 @@ async function settled(page){
     context.on('response',r=>responses.push({url:r.url(),status:r.status()}));
     await page.goto(url);const initial=await settled(page);
     const publication=await (await page.request.get(new URL('publication.json',url).href)).json();
-    const hasNmt2019=Object.hasOwn(publication.terrain.clouds,'nmt2019');
-    const regionalSource=hasNmt2019?'nmt2019':'regional';
+    const regionalSource=['tatry','nmt2019','regional'].find(key=>publication.terrain.clouds[key]);
+    assert.equal(initial.source,regionalSource,'Warstwa regionalna jest domyślna także dla Koziej');
     assert.equal(initial.catalogSource.version,publication.catalog.version);
     assert.equal(initial.totalLegs,publication.counts.legs);
     assert.equal(await page.locator('#catalogRelease').textContent(),publication.catalog.version);
@@ -43,26 +43,40 @@ async function settled(page){
       }
       await page.screenshot({path:path.join(output,kind+'.png')});
     }
-    if(hasNmt2019){
-      const cave=await page.evaluate(()=>jktz.getModel().groups.find(g=>g.id==='Wysoka7Progow')?.id);
-      if(cave){
+    if(regionalSource!=='regional'){
+      const targets=regionalSource==='tatry'?['NovaKresanica','ObcasnaVyv']:['Wysoka7Progow'];
+      const caves=await page.evaluate(ids=>jktz.getModel().groups.map(g=>g.id).filter(id=>ids.includes(id)),targets);
+      for(const cave of caves){
         await page.selectOption('#cave',cave);
         for(const kind of ['above','below']){
           await page.click('#'+kind);
           const s=await settled(page);
-          assert.equal(s.source,'nmt2019');
-          assert.deepEqual(s.clouds.filter(c=>c.visible).map(c=>c.key),['nmt2019']);
-          await page.screenshot({path:path.join(output,'nmt2019-'+kind+'.png')});
+          assert.equal(s.source,regionalSource);
+          assert(s.points<=s.pointBudget);
+          assert.deepEqual(s.clouds.filter(c=>c.visible).map(c=>c.key),[regionalSource]);
+          await page.screenshot({path:path.join(output,cave+'-'+kind+'.png')});
         }
       }
       await page.click('#region');
       await page.selectOption('#source','regional');
       assert.equal((await settled(page)).source,'regional');
-      const newCloudRanges=responses.filter(r=>r.url.includes('/data/nmt2019/') && r.status===206);
+      const newCloudRanges=responses.filter(r=>r.url.includes('/data/'+regionalSource+'/') && r.status===206);
       assert(newCloudRanges.some(r=>r.url.endsWith('/hierarchy.bin')));
       assert(newCloudRanges.some(r=>r.url.endsWith('/octree.bin')));
     }
-    await page.selectOption('#cave',initial.selected);await page.click('#below');await settled(page);
+    await page.selectOption('#cave',initial.selected);
+    await page.selectOption('#source','kozia');
+    assert.deepEqual((await settled(page)).clouds.filter(c=>c.visible).map(c=>c.key),['kozia']);
+    const otherCave=await page.locator('#cave option').evaluateAll((options,selected)=>
+      options.find(option=>option.value!=='all' && option.value!==selected)?.value,initial.selected);
+    if(otherCave){
+      await page.selectOption('#cave',otherCave);
+      assert.equal(await page.locator('#source').inputValue(),'kozia','Zmiana jaskini zachowuje źródło terenu');
+    }
+    await page.click('#region');
+    assert.equal(await page.locator('#source').inputValue(),'kozia','Widok całego JKTZ zachowuje źródło terenu');
+    await page.selectOption('#cave',initial.selected);await page.click('#below');
+    assert.deepEqual((await settled(page)).clouds.filter(c=>c.visible).map(c=>c.key),['kozia']);
     const before=await state(page);
     await page.mouse.move(1000,500);await page.mouse.down();await page.mouse.move(1080,540,{steps:8});await page.mouse.up();await page.mouse.wheel(0,-180);await page.waitForTimeout(300);
     assert.notDeepEqual((await state(page)).camera,before.camera);
@@ -73,6 +87,7 @@ async function settled(page){
     await page.screenshot({path:path.join(output,'mobile-viewport.png')});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.setViewportSize({width:1400,height:900});await page.reload();const reload=await settled(page);
+    assert.equal(reload.source,regionalSource);
     assert.equal(errors.length,0,errors.join('; '));
     assert.deepEqual(invalidHeaders,[],'GET Range must not send a multipart Content-Type');
     assert(responses.every(r=>[200,206].includes(r.status)),JSON.stringify(responses.filter(r=>r.status>=400)));
