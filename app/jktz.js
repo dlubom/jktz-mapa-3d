@@ -8,6 +8,7 @@ const scenePoint = a => new Vector3(...local(a));
 const clouds = new Map();
 const sourceLabels = {
   kozia: 'Kozia · punkty gruntu ALS 2025',
+  tatry: 'Tatry · NMT 2019 + DMR 5.0',
   nmt2019: 'Tatry · NMT 2019 · siatka 5 m',
   regional: 'Tatry · NMT z ALS 2025 · krok 4 m',
 };
@@ -90,7 +91,8 @@ async function init() {
   $('catalogRelease').href = model.source.releaseUrl;
   const publication = await fetch('../../publication.json').then(r => {if (!r.ok) throw Error('Brak manifestu publikacji'); return r.json();});
   const sources = publication.terrain.clouds;
-  if (sources.nmt2019) regionalSource = 'nmt2019';
+  regionalSource = ['tatry', 'nmt2019', 'regional'].find(key => sources[key]);
+  $('dmrAttribution').hidden = !sources.tatry;
   $('source').replaceChildren(...Object.keys(sourceLabels).filter(key => sources[key]).map(key => new Option(sourceLabels[key], key)));
   choose(groups.has('Kozia') ? 'Kozia' : model.groups[0].id);
   if (/^[a-f0-9]{40}$/.test(publication.commit)) $('codeSource').href = `https://github.com/dlubom/jktz-mapa-3d/tree/${publication.commit}`;

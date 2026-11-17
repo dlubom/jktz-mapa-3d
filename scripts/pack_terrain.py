@@ -37,9 +37,22 @@ def pack(base, base_manifest, nmt, sources, index, output):
         files[name] = nmt / name
     files["provenance/nmt2019-index.gml"] = index
     files["provenance/nmt2019-sources.json"] = sources
+    metadata = json.loads(files["nmt2019/metadata.json"].read_text())
+    clouds = {
+        **original["clouds"],
+        "nmt2019": {
+            "metadata": "nmt2019/metadata.json",
+            "points": metadata["points"],
+            "source": "GUGiK photogrammetric NMT 2019, native 5 m",
+        },
+    }
+    write_bundle(output, VERSION, files, clouds)
+
+
+def write_bundle(output, version, files, clouds):
     checksums = {name: file_record(path) for name, path in files.items()}
     output.mkdir(parents=True, exist_ok=False)
-    archive_path = output / f"{VERSION}.zip"
+    archive_path = output / f"{version}.zip"
     with zipfile.ZipFile(archive_path, "w") as archive:
         for name, path in sorted(files.items()):
             entry = zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0))
@@ -48,25 +61,17 @@ def pack(base, base_manifest, nmt, sources, index, output):
             entry.compress_type = zipfile.ZIP_DEFLATED
             with path.open("rb") as source, archive.open(entry, "w") as target:
                 shutil.copyfileobj(source, target)
-    metadata = json.loads(files["nmt2019/metadata.json"].read_text())
     manifest = {
         "schema_version": 1,
-        "terrain_version": VERSION,
+        "terrain_version": version,
         "archive": {
             "name": archive_path.name,
-            "url": f"{RELEASE}/download/{VERSION}/{archive_path.name}",
+            "url": f"{RELEASE}/download/{version}/{archive_path.name}",
             **file_record(archive_path),
         },
-        "clouds": {
-            **original["clouds"],
-            "nmt2019": {
-                "metadata": "nmt2019/metadata.json",
-                "points": metadata["points"],
-                "source": "GUGiK photogrammetric NMT 2019, native 5 m",
-            },
-        },
+        "clouds": clouds,
         "files": checksums,
-        "release": {"tag": VERSION, "url": f"{RELEASE}/tag/{VERSION}"},
+        "release": {"tag": version, "url": f"{RELEASE}/tag/{version}"},
     }
     (output / "terrain.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n"

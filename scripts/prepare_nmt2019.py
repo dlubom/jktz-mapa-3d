@@ -120,40 +120,16 @@ def prepare(manifest_path, source_dir, output, converter):
         },
     )
 
-    header = laspy.LasHeader(point_format=3, version="1.2")
-    header.scales = np.full(3, 0.001)
-    header.add_crs(CRS.from_user_input(manifest["crs"]))
-    cloud = laspy.LasData(header)
-    cloud.x = x0 + (cols + 0.5) * step
-    cloud.y = y0 - (rows + 0.5) * step
-    cloud.z = elevation.astype(np.float64)
-    knots = [800, 1300, 1650, 1900, 2400]
-    colors = (
-        [65, 96, 146, 178, 230],
-        [95, 125, 145, 172, 230],
-        [81, 90, 115, 156, 226],
-    )
-    for name, shades in zip(("red", "green", "blue"), colors):
-        cloud[name] = (
-            np.rint(np.interp(elevation, knots, shades)).astype(np.uint16) * 257
-        )
-    las = output.parent / "nmt2019-5m.las"
-    cloud.write(las)
-    options = [
-        "--encoding",
-        "DEFAULT",
-        "--method",
-        "poisson",
-        "--projection",
+    options = write_cloud(
+        output,
+        "nmt2019",
+        "nmt2019-5m",
         manifest["crs"],
-    ]
-    subprocess.run(
-        [str(converter), str(las), "-o", str(output / "nmt2019"), *options],
-        check=True,
+        converter,
+        x0 + (cols + 0.5) * step,
+        y0 - (rows + 0.5) * step,
+        elevation,
     )
-    metadata = json.loads((output / "nmt2019/metadata.json").read_text())
-    if metadata["points"] != count or metadata["projection"] != manifest["crs"]:
-        raise ValueError("Potree metadata does not match the native pixel count or CRS")
     write_json(
         output / "nmt2019-provenance.json",
         {
@@ -167,6 +143,44 @@ def prepare(manifest_path, source_dir, output, converter):
             "excluded_samples_below_500_m": rejected,
         },
     )
+
+
+def write_cloud(output, folder, name, crs, converter, east, north, elevation):
+    header = laspy.LasHeader(point_format=3, version="1.2")
+    header.scales = np.full(3, 0.001)
+    header.add_crs(CRS.from_user_input(crs))
+    cloud = laspy.LasData(header)
+    cloud.x = east
+    cloud.y = north
+    cloud.z = elevation.astype(np.float64)
+    knots = [800, 1300, 1650, 1900, 2400]
+    colors = (
+        [65, 96, 146, 178, 230],
+        [95, 125, 145, 172, 230],
+        [81, 90, 115, 156, 226],
+    )
+    for channel, shades in zip(("red", "green", "blue"), colors):
+        cloud[channel] = (
+            np.rint(np.interp(elevation, knots, shades)).astype(np.uint16) * 257
+        )
+    las = output.parent / f"{name}.las"
+    cloud.write(las)
+    options = [
+        "--encoding",
+        "DEFAULT",
+        "--method",
+        "poisson",
+        "--projection",
+        crs,
+    ]
+    subprocess.run(
+        [str(converter), str(las), "-o", str(output / folder), *options],
+        check=True,
+    )
+    metadata = json.loads((output / folder / "metadata.json").read_text())
+    if metadata["points"] != len(elevation) or metadata["projection"] != crs:
+        raise ValueError("Potree metadata does not match the native pixel count or CRS")
+    return options
 
 
 if __name__ == "__main__":

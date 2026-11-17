@@ -28,8 +28,7 @@ async function settled(page){
     context.on('response',r=>responses.push({url:r.url(),status:r.status()}));
     await page.goto(url);const initial=await settled(page);
     const publication=await (await page.request.get(new URL('publication.json',url).href)).json();
-    const hasNmt2019=Object.hasOwn(publication.terrain.clouds,'nmt2019');
-    const regionalSource=hasNmt2019?'nmt2019':'regional';
+    const regionalSource=['tatry','nmt2019','regional'].find(key=>publication.terrain.clouds[key]);
     assert.equal(initial.catalogSource.version,publication.catalog.version);
     assert.equal(initial.totalLegs,publication.counts.legs);
     assert.equal(await page.locator('#catalogRelease').textContent(),publication.catalog.version);
@@ -43,22 +42,24 @@ async function settled(page){
       }
       await page.screenshot({path:path.join(output,kind+'.png')});
     }
-    if(hasNmt2019){
-      const cave=await page.evaluate(()=>jktz.getModel().groups.find(g=>g.id==='Wysoka7Progow')?.id);
-      if(cave){
+    if(regionalSource!=='regional'){
+      const targets=regionalSource==='tatry'?['NovaKresanica','ObcasnaVyv']:['Wysoka7Progow'];
+      const caves=await page.evaluate(ids=>jktz.getModel().groups.map(g=>g.id).filter(id=>ids.includes(id)),targets);
+      for(const cave of caves){
         await page.selectOption('#cave',cave);
         for(const kind of ['above','below']){
           await page.click('#'+kind);
           const s=await settled(page);
-          assert.equal(s.source,'nmt2019');
-          assert.deepEqual(s.clouds.filter(c=>c.visible).map(c=>c.key),['nmt2019']);
-          await page.screenshot({path:path.join(output,'nmt2019-'+kind+'.png')});
+          assert.equal(s.source,regionalSource);
+          assert(s.points<=s.pointBudget);
+          assert.deepEqual(s.clouds.filter(c=>c.visible).map(c=>c.key),[regionalSource]);
+          await page.screenshot({path:path.join(output,cave+'-'+kind+'.png')});
         }
       }
       await page.click('#region');
       await page.selectOption('#source','regional');
       assert.equal((await settled(page)).source,'regional');
-      const newCloudRanges=responses.filter(r=>r.url.includes('/data/nmt2019/') && r.status===206);
+      const newCloudRanges=responses.filter(r=>r.url.includes('/data/'+regionalSource+'/') && r.status===206);
       assert(newCloudRanges.some(r=>r.url.endsWith('/hierarchy.bin')));
       assert(newCloudRanges.some(r=>r.url.endsWith('/octree.bin')));
     }
