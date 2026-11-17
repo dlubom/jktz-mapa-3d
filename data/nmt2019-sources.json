@@ -1,0 +1,308 @@
+{
+  "attribution": "GUGiK / Państwowy Zasób Geodezyjny i Kartograficzny",
+  "terms": "https://www.geoportal.gov.pl/pl/dane/numeryczny-model-terenu-nmt/",
+  "campaign": "DFT.7201.003.2019",
+  "source": "Zdjęcia lotnicze",
+  "crs": "EPSG:2180",
+  "vertical_datum": "PL-EVRF2007-NH",
+  "grid": {
+    "geotransform": [
+      558397.5,
+      5,
+      0,
+      157102.5,
+      0,
+      -5
+    ],
+    "width": 3861,
+    "height": 1321
+  },
+  "index": {
+    "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NumerycznyModelTerenuEVRF2007/WFS/Skorowidze?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=gugik%3ASkorowidzNMT2019&BBOX=150500%2C558400%2C157100%2C577700%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2180&COUNT=1000",
+    "retrieved": "2026-11-17",
+    "bytes": 190672,
+    "sha256": "ac5e3b8cf407c086ac30075d2305506078755d7f8b0a421dc5dabc8fae4e9653"
+  },
+  "sheets": [
+    {
+      "sheet": "M-34-100-B-a-3-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945599_M-34-100-B-a-3-2.asc",
+      "bytes": 1747946,
+      "sha256": "41c4b49353537f4ec40d417df568cd74c3c69e1a131c9cd049fe1550689996f4"
+    },
+    {
+      "sheet": "M-34-100-B-a-3-4",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945600_M-34-100-B-a-3-4.asc",
+      "bytes": 1877629,
+      "sha256": "fa8a19109138acea872f26727f764e209fd3895027bdc40ccd7fe255513bfcff"
+    },
+    {
+      "sheet": "M-34-100-B-a-4-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945601_M-34-100-B-a-4-1.asc",
+      "bytes": 1748412,
+      "sha256": "fd1e3377aa742e4e8bacc4a5b29a2a2e31e8261651f9c610f4ff9fc3fcf33e8c"
+    },
+    {
+      "sheet": "M-34-100-B-a-4-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945602_M-34-100-B-a-4-2.asc",
+      "bytes": 1738777,
+      "sha256": "b654c745d443a148dbb4238e9ba33d3f09ae0f0c6b0e2dc77081a26cc553764a"
+    },
+    {
+      "sheet": "M-34-100-B-a-4-3",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945603_M-34-100-B-a-4-3.asc",
+      "bytes": 1895228,
+      "sha256": "bb3ef363bd862a94576e859a2a1c10174c1f47baeb800a24f4ed5047479ae3c2"
+    },
+    {
+      "sheet": "M-34-100-B-a-4-4",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945604_M-34-100-B-a-4-4.asc",
+      "bytes": 1885223,
+      "sha256": "c10004fdbf40b476a72ab2b3020d436d1f9c5a0e6c2ca679f86cf47fe9a818a5"
+    },
+    {
+      "sheet": "M-34-100-B-b-3-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945613_M-34-100-B-b-3-1.asc",
+      "bytes": 1732211,
+      "sha256": "30cd3b14e963e5b0721ad2b3cd5bcac83995ea2f522dad20e6ef2a75e0a3e8ee"
+    },
+    {
+      "sheet": "M-34-100-B-b-3-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945614_M-34-100-B-b-3-2.asc",
+      "bytes": 1756973,
+      "sha256": "63ad77f7500f646858f3281fbef3e7547c3c23b8340a6ed3372d7ee5414bc969"
+    },
+    {
+      "sheet": "M-34-100-B-b-3-3",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945615_M-34-100-B-b-3-3.asc",
+      "bytes": 1915160,
+      "sha256": "54560f8c64cb51ab95ed896552cd079151603f4487868d46b1b41a1a1d0b113c"
+    },
+    {
+      "sheet": "M-34-100-B-b-3-4",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945616_M-34-100-B-b-3-4.asc",
+      "bytes": 1918201,
+      "sha256": "f8219c266515113ec7dc29910179136eca75bd4b1c03ceeb5d5b67f68991a7fd"
+    },
+    {
+      "sheet": "M-34-100-B-b-4-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945617_M-34-100-B-b-4-1.asc",
+      "bytes": 1755376,
+      "sha256": "cdef0f255f85fd5de33c93947d58fd24d23efce0d4a93ada855e7dcd8ae1d83e"
+    },
+    {
+      "sheet": "M-34-100-B-b-4-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945618_M-34-100-B-b-4-2.asc",
+      "bytes": 1776104,
+      "sha256": "996e33b6746f923dc729e3a32d1e73a80bf445e1dda7fa4bd8bf68040b6003b1"
+    },
+    {
+      "sheet": "M-34-100-B-b-4-3",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945619_M-34-100-B-b-4-3.asc",
+      "bytes": 1916588,
+      "sha256": "772929070b77a213ba1adfd7f6f719c8299b0c3113d3f8b43a56eeff501543ff"
+    },
+    {
+      "sheet": "M-34-100-B-b-4-4",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945620_M-34-100-B-b-4-4.asc",
+      "bytes": 1924290,
+      "sha256": "3fe18a0e353e7a185f459379af75bcc751bab3cfc1099abc1d67c41bd4d42943"
+    },
+    {
+      "sheet": "M-34-100-B-c-1-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945622_M-34-100-B-c-1-2.asc",
+      "bytes": 1912791,
+      "sha256": "e3b67be8d6d761b7a294b896557596b8834457093580067b24a1ec80423a24dc"
+    },
+    {
+      "sheet": "M-34-100-B-c-1-4",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945624_M-34-100-B-c-1-4.asc",
+      "bytes": 1913324,
+      "sha256": "aeae5d0217ea354b040ab0af10e18b59dd7c6285ed5307f8ca057fdcb338eac8"
+    },
+    {
+      "sheet": "M-34-100-B-c-2-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945625_M-34-100-B-c-2-1.asc",
+      "bytes": 1917333,
+      "sha256": "1acb9edb88b6e36b3957e17b2c76061cd4cd178cf50b8e292a0b4ce7cc507600"
+    },
+    {
+      "sheet": "M-34-100-B-c-2-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945626_M-34-100-B-c-2-2.asc",
+      "bytes": 1916442,
+      "sha256": "c6827ddfa7fe0b2d9173389a3e6e74119e36c9436a366cd0ed3589177ad7e154"
+    },
+    {
+      "sheet": "M-34-100-B-c-2-3",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945627_M-34-100-B-c-2-3.asc",
+      "bytes": 1921238,
+      "sha256": "865f62f2679c2806b6394848bf892ec85d9417b544f5f28bed6618d6d5b918da"
+    },
+    {
+      "sheet": "M-34-100-B-c-2-4",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945628_M-34-100-B-c-2-4.asc",
+      "bytes": 1924792,
+      "sha256": "23c9db5a44e45f932a343a2a11124b5a540887103323ed6c47798d3849fc1698"
+    },
+    {
+      "sheet": "M-34-100-B-d-1-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945633_M-34-100-B-d-1-1.asc",
+      "bytes": 1917228,
+      "sha256": "0a92922828f57e1034abe35cad2c631c534bdf3b74f8e139c9efa41fcc93fd46"
+    },
+    {
+      "sheet": "M-34-100-B-d-1-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945634_M-34-100-B-d-1-2.asc",
+      "bytes": 1893697,
+      "sha256": "29a4057f3ccb26a488dfbc4489d1237c60943b7a02a78c3d40a91d22f511e8ea"
+    },
+    {
+      "sheet": "M-34-100-B-d-1-3",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945635_M-34-100-B-d-1-3.asc",
+      "bytes": 1911746,
+      "sha256": "264d9fa200ae459d07285a1b88128cc406a3a8d1db415a04b2388267a0db1084"
+    },
+    {
+      "sheet": "M-34-100-B-d-1-4",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945636_M-34-100-B-d-1-4.asc",
+      "bytes": 1740523,
+      "sha256": "d08749af876fddd6ecc502a3ba5c5edb3dec589d75c304a778602114ad3f5bc9"
+    },
+    {
+      "sheet": "M-34-100-B-d-2-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945637_M-34-100-B-d-2-1.asc",
+      "bytes": 1909245,
+      "sha256": "728cb125c8cc0e647c2fc7c3d4618bcb4bba4af064636dd8221e69ec22861f9c"
+    },
+    {
+      "sheet": "M-34-100-B-d-2-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945638_M-34-100-B-d-2-2.asc",
+      "bytes": 1924894,
+      "sha256": "63f5c7290911404e7257b326f43584edacff24b96bdcb6bffb0787d09efedb5d"
+    },
+    {
+      "sheet": "M-34-100-B-d-2-3",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945639_M-34-100-B-d-2-3.asc",
+      "bytes": 1734039,
+      "sha256": "890a4a43b7e24f548a28bd73a99271b1c3bf957d6a1c4690bafef9f3952e922f"
+    },
+    {
+      "sheet": "M-34-100-B-d-2-4",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945640_M-34-100-B-d-2-4.asc",
+      "bytes": 1767503,
+      "sha256": "db6d8aeaf6198cdf773f737e93eb3f7deb8971acf4fa6add9b6ee2b1b07ddb5a"
+    },
+    {
+      "sheet": "M-34-101-A-a-3-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945650_M-34-101-A-a-3-1.asc",
+      "bytes": 1869110,
+      "sha256": "0b79506f365394e9108aefe8022af4117463fb314dfc44114a806229875293d7"
+    },
+    {
+      "sheet": "M-34-101-A-a-3-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945651_M-34-101-A-a-3-2.asc",
+      "bytes": 1863720,
+      "sha256": "7ff0b98ae641464d89dd9a6e80efec8c291fb86389d56f7cc251254c1502061b"
+    },
+    {
+      "sheet": "M-34-101-A-a-3-3",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945652_M-34-101-A-a-3-3.asc",
+      "bytes": 1920700,
+      "sha256": "21112d529e0fa10560c35012a056141225864f7f7a81424ad2918152499d32e0"
+    },
+    {
+      "sheet": "M-34-101-A-a-3-4",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945653_M-34-101-A-a-3-4.asc",
+      "bytes": 1928211,
+      "sha256": "75f69f9ce2e357eae0895e89b1ea73741b86e8197e7c5bd2e877a62a0f429dbc"
+    },
+    {
+      "sheet": "M-34-101-A-a-4-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945654_M-34-101-A-a-4-1.asc",
+      "bytes": 1811168,
+      "sha256": "3ef74151c122883881ae1aa5ac1c9688d70ac50eb87489aca3d0b27b28dda1d2"
+    },
+    {
+      "sheet": "M-34-101-A-a-4-3",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945656_M-34-101-A-a-4-3.asc",
+      "bytes": 1924455,
+      "sha256": "4c577241b1cdbf6e6a9f55b555cc5b4ec00c42840a3f346a600f4f0e0b77a02b"
+    },
+    {
+      "sheet": "M-34-101-A-c-1-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945665_M-34-101-A-c-1-1.asc",
+      "bytes": 1924756,
+      "sha256": "808c30c1264367679ebae3ea5f3687fa168027a199d20fb691029c62a3271b8e"
+    },
+    {
+      "sheet": "M-34-101-A-c-1-2",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945666_M-34-101-A-c-1-2.asc",
+      "bytes": 1932069,
+      "sha256": "60bdd0c350ef9fc3d8b9a648283b0f720d3e2198a55ab0f829f331ca3d2bb817"
+    },
+    {
+      "sheet": "M-34-101-A-c-1-3",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945667_M-34-101-A-c-1-3.asc",
+      "bytes": 1908551,
+      "sha256": "72ed30bbb9d3962962268268dbcdddec23892dd7284cb084ed44e5c606f0435a"
+    },
+    {
+      "sheet": "M-34-101-A-c-1-4",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945668_M-34-101-A-c-1-4.asc",
+      "bytes": 1928849,
+      "sha256": "46f4fbe6419fe6030a83d1765d957b0f65da6c5956809c46171fccbdb8119799"
+    },
+    {
+      "sheet": "M-34-101-A-c-2-1",
+      "date": "2019-07-04",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945669_M-34-101-A-c-2-1.asc",
+      "bytes": 1924961,
+      "sha256": "4b666e556abcb68244cba214af8d77a5811d454b0fbc9f382dffed3cdabf5f2b"
+    },
+    {
+      "sheet": "M-34-101-A-c-2-3",
+      "date": "2019-09-01",
+      "url": "https://opendata.geoportal.gov.pl/NumDaneWys/NMT/73122/73122_945671_M-34-101-A-c-2-3.asc",
+      "bytes": 1923795,
+      "sha256": "b0126fe54eadc6b046b93518c1ad329693d6010b3eaaf025d2edcab714b646a4"
+    }
+  ]
+}

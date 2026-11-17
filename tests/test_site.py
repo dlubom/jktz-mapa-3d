@@ -65,12 +65,14 @@ class SiteTests(unittest.TestCase):
             )
         )
         self.terrain = self.root / "terrain.json"
-        for cloud in ["kozia", "regional"]:
+        clouds = ["kozia", "regional", "nmt2019"]
+        for cloud in clouds:
             folder = self.output / "data" / cloud
             folder.mkdir()
             (folder / "metadata.json").write_text(
                 json.dumps(
                     {
+                        "points": 10,
                         "scale": [0.001] * 3,
                         "offset": [1, 2, 3],
                         "boundingBox": {"min": [1, 2, 3]},
@@ -85,6 +87,10 @@ class SiteTests(unittest.TestCase):
                 {
                     "schema_version": 1,
                     "terrain_version": "test-v1",
+                    "clouds": {
+                        cloud: {"metadata": f"{cloud}/metadata.json", "points": 10}
+                        for cloud in clouds
+                    },
                     "files": {
                         str(p.relative_to(self.output / "data")): {
                             "bytes": p.stat().st_size,

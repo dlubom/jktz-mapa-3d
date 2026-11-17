@@ -6,8 +6,14 @@ const origin = [566000, 153000, 0];
 const local = a => a.map((v, i) => v - origin[i]);
 const scenePoint = a => new Vector3(...local(a));
 const clouds = new Map();
+const sourceLabels = {
+  kozia: 'Kozia · punkty gruntu ALS 2025',
+  nmt2019: 'Tatry · NMT 2019 · siatka 5 m',
+  regional: 'Tatry · NMT z ALS 2025 · krok 4 m',
+};
 const failures = [];
 let model, viewer, groups, selected = 'Kozia', view = 'above', readyAt = null;
+let regionalSource = 'regional';
 let renderedLegs = 0, firstFrameAt = null, lastFrame = null;
 const frameTimes = [];
 
@@ -24,15 +30,12 @@ window.addEventListener('unhandledrejection', event => fail(event.reason?.messag
 function choose(id) {
   selected = id;
   $('cave').value = id;
-  return id === 'all' ? model.bounds : groups.get(id).bounds;
+  $('source').value = id === 'Kozia' ? 'kozia' : regionalSource;
 }
 
 function setView(kind) {
   view = kind;
-  if (kind === 'region') {
-    choose('all');
-    $('source').value = 'regional';
-  }
+  if (kind === 'region') choose('all');
   const b = selected === 'all' ? model.bounds : groups.get(selected).bounds;
   const middle = b.min.map((v, i) => (v + b.max[i]) / 2);
   const size = b.max.map((v, i) => v - b.min[i]);
@@ -83,11 +86,13 @@ async function init() {
   if (model.origin.some((v, i) => v !== origin[i])) throw Error('Niezgodny początek układu współrzędnych');
   groups = new Map(model.groups.map(g => [g.id, g]));
   $('cave').replaceChildren(...[['all', 'Wszystkie jaskinie JKTZ'], ...model.groups.map(g => [g.id, g.name])].map(([id, name]) => {const o = document.createElement('option'); o.value = id; o.textContent = name; return o;}));
-  choose(groups.has('Kozia') ? 'Kozia' : model.groups[0].id);
-  if (selected !== 'Kozia') $('source').value = 'regional';
   $('catalogRelease').textContent = model.source.version;
   $('catalogRelease').href = model.source.releaseUrl;
   const publication = await fetch('../../publication.json').then(r => {if (!r.ok) throw Error('Brak manifestu publikacji'); return r.json();});
+  const sources = publication.terrain.clouds;
+  if (sources.nmt2019) regionalSource = 'nmt2019';
+  $('source').replaceChildren(...Object.keys(sourceLabels).filter(key => sources[key]).map(key => new Option(sourceLabels[key], key)));
+  choose(groups.has('Kozia') ? 'Kozia' : model.groups[0].id);
   if (/^[a-f0-9]{40}$/.test(publication.commit)) $('codeSource').href = `https://github.com/dlubom/jktz-mapa-3d/tree/${publication.commit}`;
   viewer = await Potree.init($('canvas'));
   window.potree = viewer;
@@ -120,15 +125,15 @@ async function init() {
   $('above').onclick = () => setView('above');
   $('below').onclick = () => setView('below');
   $('region').onclick = () => setView('region');
-  $('cave').onchange = () => {choose($('cave').value); if (selected !== 'Kozia') $('source').value = 'regional'; else $('source').value = 'kozia'; setView('above');};
+  $('cave').onchange = () => {choose($('cave').value); setView('above');};
   $('source').onchange = () => {updateVisibility(); updateCaption();};
   $('terrain').onchange = updateVisibility;
   $('budget').onchange = () => {Potree.settings.pointBudget = Number($('budget').value);};
   $('size').oninput = () => {Potree.settings.pointSize = Number($('size').value); $('sizeValue').textContent = $('size').value;};
   setView(new URLSearchParams(location.search).get('view') || 'below');
-  for (const key of ['kozia', 'regional']) {
-    $('status').textContent = `Ładowanie ${key === 'kozia' ? 'punktów ALS Koziej' : 'regionalnego NMT'}…`;
-    const cloud = await PotreeLoader.load(new URL(`../../data/${key}/metadata.json`, location.href).href);
+  const activeSource = $('source').value;
+  for (const key of [activeSource, ...Object.keys(sources).filter(key => key !== activeSource)]) {
+    const cloud = await PotreeLoader.load(new URL(`../../data/${sources[key].metadata}`, location.href).href);
     cloud.name = key;
     cloud.position.sub(new Vector3(...origin));
     cloud.updateWorld();
@@ -138,7 +143,7 @@ async function init() {
   }
   const coverage = await fetch('../../data/coverage.json').then(r => {if (!r.ok) throw Error('Brak danych o pokryciu terenu'); return r.json();});
   $('coverage').textContent = coverage.description;
-  $('coverageSummary').textContent = `ALS 2025: teren dostępny nad ${coverage.summary}. Poza pokryciem puste tło.`;
+  $('coverageSummary').textContent = `${coverage.source || 'ALS 2025'} obejmuje ${coverage.summary}.`;
   setInterval(() => {
     const active = clouds.get($('source').value);
     if (active?.loader.error) fail(active.loader.error);
