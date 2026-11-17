@@ -29,6 +29,7 @@ async function settled(page){
     await page.goto(url);const initial=await settled(page);
     const publication=await (await page.request.get(new URL('publication.json',url).href)).json();
     const regionalSource=['tatry','nmt2019','regional'].find(key=>publication.terrain.clouds[key]);
+    assert.equal(initial.source,regionalSource,'Warstwa regionalna jest domyślna także dla Koziej');
     assert.equal(initial.catalogSource.version,publication.catalog.version);
     assert.equal(initial.totalLegs,publication.counts.legs);
     assert.equal(await page.locator('#catalogRelease').textContent(),publication.catalog.version);
@@ -63,7 +64,19 @@ async function settled(page){
       assert(newCloudRanges.some(r=>r.url.endsWith('/hierarchy.bin')));
       assert(newCloudRanges.some(r=>r.url.endsWith('/octree.bin')));
     }
-    await page.selectOption('#cave',initial.selected);await page.click('#below');await settled(page);
+    await page.selectOption('#cave',initial.selected);
+    await page.selectOption('#source','kozia');
+    assert.deepEqual((await settled(page)).clouds.filter(c=>c.visible).map(c=>c.key),['kozia']);
+    const otherCave=await page.locator('#cave option').evaluateAll((options,selected)=>
+      options.find(option=>option.value!=='all' && option.value!==selected)?.value,initial.selected);
+    if(otherCave){
+      await page.selectOption('#cave',otherCave);
+      assert.equal(await page.locator('#source').inputValue(),'kozia','Zmiana jaskini zachowuje źródło terenu');
+    }
+    await page.click('#region');
+    assert.equal(await page.locator('#source').inputValue(),'kozia','Widok całego JKTZ zachowuje źródło terenu');
+    await page.selectOption('#cave',initial.selected);await page.click('#below');
+    assert.deepEqual((await settled(page)).clouds.filter(c=>c.visible).map(c=>c.key),['kozia']);
     const before=await state(page);
     await page.mouse.move(1000,500);await page.mouse.down();await page.mouse.move(1080,540,{steps:8});await page.mouse.up();await page.mouse.wheel(0,-180);await page.waitForTimeout(300);
     assert.notDeepEqual((await state(page)).camera,before.camera);
@@ -74,6 +87,7 @@ async function settled(page){
     await page.screenshot({path:path.join(output,'mobile-viewport.png')});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.setViewportSize({width:1400,height:900});await page.reload();const reload=await settled(page);
+    assert.equal(reload.source,regionalSource);
     assert.equal(errors.length,0,errors.join('; '));
     assert.deepEqual(invalidHeaders,[],'GET Range must not send a multipart Content-Type');
     assert(responses.every(r=>[200,206].includes(r.status)),JSON.stringify(responses.filter(r=>r.status>=400)));

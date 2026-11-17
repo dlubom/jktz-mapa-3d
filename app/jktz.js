@@ -7,14 +7,13 @@ const local = a => a.map((v, i) => v - origin[i]);
 const scenePoint = a => new Vector3(...local(a));
 const clouds = new Map();
 const sourceLabels = {
-  kozia: 'Kozia · punkty gruntu ALS 2025',
   tatry: 'Tatry · NMT 2019 + DMR 5.0',
   nmt2019: 'Tatry · NMT 2019 · siatka 5 m',
   regional: 'Tatry · NMT z ALS 2025 · krok 4 m',
+  kozia: 'Kozia · lokalny szczegół ALS 2025',
 };
 const failures = [];
 let model, viewer, groups, selected = 'Kozia', view = 'above', readyAt = null;
-let regionalSource = 'regional';
 let renderedLegs = 0, firstFrameAt = null, lastFrame = null;
 const frameTimes = [];
 
@@ -31,7 +30,6 @@ window.addEventListener('unhandledrejection', event => fail(event.reason?.messag
 function choose(id) {
   selected = id;
   $('cave').value = id;
-  $('source').value = id === 'Kozia' ? 'kozia' : regionalSource;
 }
 
 function setView(kind) {
@@ -91,9 +89,10 @@ async function init() {
   $('catalogRelease').href = model.source.releaseUrl;
   const publication = await fetch('../../publication.json').then(r => {if (!r.ok) throw Error('Brak manifestu publikacji'); return r.json();});
   const sources = publication.terrain.clouds;
-  regionalSource = ['tatry', 'nmt2019', 'regional'].find(key => sources[key]);
   $('dmrAttribution').hidden = !sources.tatry;
-  $('source').replaceChildren(...Object.keys(sourceLabels).filter(key => sources[key]).map(key => new Option(sourceLabels[key], key)));
+  const sourceSelect = $('source');
+  sourceSelect.replaceChildren(...Object.keys(sourceLabels).filter(key => sources[key]).map(key => new Option(sourceLabels[key], key)));
+  sourceSelect.value = ['tatry', 'nmt2019', 'regional'].find(key => sources[key]);
   choose(groups.has('Kozia') ? 'Kozia' : model.groups[0].id);
   if (/^[a-f0-9]{40}$/.test(publication.commit)) $('codeSource').href = `https://github.com/dlubom/jktz-mapa-3d/tree/${publication.commit}`;
   viewer = await Potree.init($('canvas'));

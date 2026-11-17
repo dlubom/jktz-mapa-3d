@@ -14,9 +14,11 @@ northing). Wysokości GUGiK są w PL-EVRF2007-NH, a DMR 5.0 w EVRF2007
 | `regional` | NMT z ALS 2025, węzły z siatki 1 m wybrane co 4 m | 3 860 578 | 6 545 / 18 541 (35,3%) |
 | `kozia` | ALS 2025, punkty gruntu klasy 2 bez punktów withheld, z RGB | 8 820 406 | Lokalny szczegół Koziej |
 
-Widok całego JKTZ i wybór jaskiń poza Kozią używają modelu regionalnego
-z uzupełnieniem DMR. Selektor pozwala przejść do danych ALS 2025. Kolor
-punktów NMT i DMR koduje wysokość. Obie chmury ALS 2025 mają te same sumy SHA-256
+Domyślnie wszystkie jaskinie i widok całego JKTZ używają modelu regionalnego
+z uzupełnieniem DMR. Selektor „Źródło terenu” pozwala wybrać inną warstwę,
+w tym lokalny szczegół Koziej. Wybór obowiązuje przy zmianie jaskini i widoku
+do następnego wczytania strony. Kolor punktów NMT i DMR koduje wysokość.
+Obie chmury ALS 2025 mają te same sumy SHA-256
 co w [pierwszym wydaniu danych](https://github.com/dlubom/jktz-mapa-3d/releases/tag/terrain-2025-v1).
 
 ## Źródła i pokrycie
