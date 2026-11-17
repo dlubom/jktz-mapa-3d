@@ -6,17 +6,17 @@
 <script type="importmap">{"imports":{"potree":"./src/Potree.js","lazperf":"./libs/laz-perf/laz-perf.js","toolbar":"./src/modules/toolbar/toolbar.js","sidebar":"./src/modules/sidebar/sidebar.js","dat.gui":"./libs/dat.gui/dat.gui.module.js","BinaryHeap":"./libs/BinaryHeap/BinaryHeap.js","tween":"./libs/tween/tween.esm.js","range-select":"./libs/range-select/RangeSelect.js","json5":"./libs/json5/json5.js","proj4":"./libs/proj4js/proj4-src.js","radix-sort-esm":"./libs/webgpu-radix-sort/dist/esm/radix-sort-esm.js"}}</script>
 </head><body>
 <canvas id="canvas" aria-label="Widok 3D terenu i poligonów jaskiń"></canvas><pre id="msg_dbg"></pre><pre id="msg_resources"></pre>
-<aside><div class="tag">JKTZ · mapa 3D · wersja rozwojowa</div><h1>Tatry pod powierzchnią</h1><p class="intro">ALS 2025 i poligony jaskiń<br>Potree-Next</p>
-<p id="coverageSummary" class="note" style="color:#f4d27d">ALS 2025: niepełne pokrycie Tatr.</p><label for="cave">Jaskinia / system</label><select id="cave"><option>Ładowanie poligonów…</option></select>
+<aside><div class="tag">JKTZ · mapa 3D · wersja rozwojowa</div><h1>Tatry pod powierzchnią</h1>
+<p id="coverageSummary" class="note" style="color:#f4d27d"></p><label for="cave">Jaskinia / system</label><select id="cave"><option>Ładowanie poligonów…</option></select>
 <div class="row"><button id="above">Z góry</button><button id="below">Pod powierzchnią</button><button id="region">Cały JKTZ</button></div>
 <label class="inline"><input id="terrain" type="checkbox" checked> Teren</label><label class="inline"><input id="caveVisible" type="checkbox" checked> Poligony</label>
-<label for="source">Źródło terenu</label><select id="source"><option value="kozia">Kozia: surowy ALS 2025 · grunt</option><option value="regional">Tatry: NMT z ALS 2025 · krok 4 m</option></select>
+<label for="source">Źródło terenu</label><select id="source"><option>Ładowanie źródeł…</option></select>
 <label for="budget">Budżet widocznych punktów</label><select id="budget"><option value="1000000" selected>1 mln · oszczędny</option><option value="2000000">2 mln · standardowy</option><option value="4000000">4 mln · szczegółowy</option></select>
 <label for="size">Wielkość punktów: <span id="sizeValue">2</span> px</label><input id="size" type="range" min="1" max="5" step=".5" value="2">
 <div class="legend"><span class="cyan">— poligony</span></div>
 <div id="status" role="status">Uruchamianie WebGPU…</div><div id="error" role="alert"></div><div id="metrics" class="note"></div>
 <p class="note">Kataster: <a id="catalogRelease">ładowanie wersji…</a></p><nav class="note"><a href="https://dlubom.github.io/jktz-mapa/">Mapa 2D</a> · <a id="codeSource" href="https://github.com/dlubom/jktz-mapa-3d">Kod źródłowy tej wersji</a></nav><hr><p class="note">Obrót: lewy przycisk myszy. Przesunięcie: prawy. Zbliżenie: kółko. Widok pod powierzchnią ustawia kamerę poniżej terenu; nie przesuwa jaskini ani pomiarów.</p>
-<details><summary>Pokrycie i pochodzenie</summary><p id="coverage" class="note">Trwa sprawdzanie pokrycia ALS 2025. Poza dostępnymi danymi tło pozostaje puste.</p><p class="note">Grunt ALS: oryginalne punkty klasy 2 GUGiK. Widok regionalny: punkty węzłów NMT, próbkowanie co 4 m. Są to różne produkty. Układ XY: PL-1992; teren Z: PL-EVRF2007-NH. Wysokości poligonów JKTZ zachowano ze źródła; zgodność datum całego modelu pozostaje niepotwierdzona.</p><p class="note">GUGiK — dane wysokościowe. Poligony © autorzy JKTZ, CC BY-SA 4.0. <a href="https://github.com/m-schuetz/Potree-Next">Potree-Next</a> © Markus Schütz i współautorzy.</p></details>
+<details><summary>Pokrycie i pochodzenie</summary><p id="coverage" class="note">Ładowanie statystyk pokrycia…</p><p class="note">NMT 2019 pochodzi ze zdjęć lotniczych. NMT z ALS 2025 pokazuje węzły co 4 m, a szczegół Koziej oryginalne punkty klasy 2. XY terenu: PL-1992. Z terenu: PL-EVRF2007-NH. Wysokości poligonów JKTZ pochodzą z katastru, a zgodność układów wysokości całego modelu wymaga potwierdzenia.</p><p class="note">GUGiK / Państwowy Zasób Geodezyjny i Kartograficzny. Poligony © autorzy JKTZ, CC BY-SA 4.0. <a href="https://github.com/m-schuetz/Potree-Next">Potree-Next</a> © Markus Schütz i współautorzy.</p></details>
 </aside><div id="caption">Kozia · widok z góry · ładowanie danych</div>
 <script type="module" src="./jktz.js"></script>
 </body></html>

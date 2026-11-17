@@ -87,6 +87,19 @@ class PublicationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Range"):
                 self.run_confirm(attempts=1)
 
+    def test_range_is_required_for_the_added_terrain_cloud(self):
+        self.publication["terrain"]["files"]["nmt2019/octree.bin"] = {"bytes": 100}
+        self.refresh()
+
+        def bad_new_layer(url, headers=None):
+            if url.endswith("/nmt2019/octree.bin"):
+                return 200, {}, bytes(100)
+            return self.read(url, headers)
+
+        with patch("scripts.confirm_public.read", bad_new_layer):
+            with self.assertRaisesRegex(ValueError, "Range.*nmt2019"):
+                self.run_confirm(attempts=1)
+
     def test_same_commit_with_consistent_old_catalog_is_rejected(self):
         self.publication["catalog"]["version"] = "v2"
         self.caves["source"]["version"] = "v2"

@@ -39,11 +39,18 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
         or sum(len(g["legs"]) for g in model["groups"]) != model["counts"]["legs"]
     ):
         raise ValueError("Incomplete cave geometry")
-    for cloud in ["kozia", "regional"]:
+    clouds = terrain["clouds"]
+    if not {"kozia", "regional"} <= clouds.keys():
+        raise ValueError("Incomplete terrain cloud manifest")
+    for cloud, record in clouds.items():
+        if record["metadata"] != f"{cloud}/metadata.json":
+            raise ValueError(f"Unexpected metadata path for {cloud}")
         for name in ["metadata.json", "hierarchy.bin", "octree.bin"]:
             if not (output / "data" / cloud / name).is_file():
                 raise ValueError(f"Missing terrain {cloud}/{name}")
         metadata = json.loads((output / "data" / cloud / "metadata.json").read_text())
+        if metadata["points"] != record["points"]:
+            raise ValueError(f"Unexpected point count for {cloud}")
         if (
             len(set(metadata["scale"])) != 1
             or metadata["offset"] != metadata["boundingBox"]["min"]
@@ -79,7 +86,7 @@ def build(caves_path, inputs_path, terrain_path, output, commit):
     terrain_files = terrain.get("files")
     required_files = {
         f"{cloud}/{name}"
-        for cloud in ["kozia", "regional"]
+        for cloud in clouds
         for name in ["metadata.json", "hierarchy.bin", "octree.bin"]
     }
     if (

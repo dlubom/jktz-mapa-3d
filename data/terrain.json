@@ -1,15 +1,20 @@
 {
   "archive": {
-    "bytes": 203513837,
-    "name": "terrain-als2025-v1.zip",
-    "sha256": "a87e5cb5c41c59b5087a4476beaa9cdea47785c8d68e9d42357bf0d8a3b8556a",
-    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/download/terrain-2025-v1/terrain-als2025-v1.zip"
+    "bytes": 236230721,
+    "name": "terrain-v2.zip",
+    "sha256": "3ec9fbd4ae704e59ef04ab59fb3d271f13a8849f4f76c952c697b4faf326452f",
+    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/download/terrain-v2/terrain-v2.zip"
   },
   "clouds": {
     "kozia": {
       "metadata": "kozia/metadata.json",
       "points": 8820406,
       "source": "ALS2025groundclass2"
+    },
+    "nmt2019": {
+      "metadata": "nmt2019/metadata.json",
+      "points": 4745903,
+      "source": "GUGiK photogrammetric NMT 2019, native 5 m"
     },
     "regional": {
       "metadata": "regional/metadata.json",
@@ -34,6 +39,26 @@
       "bytes": 308714210,
       "sha256": "3588036fe019529c5213c182077fdb4724f2c87d9e0e646949594f98a957d8b9"
     },
+    "nmt2019-mask.bin.gz": {
+      "bytes": 2636,
+      "sha256": "6729c7aac9dda5e5e253ab20f512ba43bfe25813780a07287a11ae4bbc1e3a3f"
+    },
+    "nmt2019-provenance.json": {
+      "bytes": 1135,
+      "sha256": "6e2b4e93d3c12bb01d47f4a09bbc36e817026cd468fa6bd1bc6a7ece222a0c30"
+    },
+    "nmt2019/hierarchy.bin": {
+      "bytes": 51238,
+      "sha256": "f2016153e3d64c5c2005de997b3f8dcbbf65472833cd51efc21f6e5d4ea7b690"
+    },
+    "nmt2019/metadata.json": {
+      "bytes": 3272,
+      "sha256": "a45223462de2fd0bfe2546fcfba6135cd34116fe86b9ba355e561073b4d9983d"
+    },
+    "nmt2019/octree.bin": {
+      "bytes": 166106605,
+      "sha256": "02b35802b55911903323b8e5178edefa677ff4b72f42eee9282388e8bd6661e9"
+    },
     "provenance/LICENSE-PotreeConverter.txt": {
       "bytes": 1267,
       "sha256": "37fa9d7bd72c9e2ebfbc5e3414ac0868dee7df67224939f2aac8565b8f10e913"
@@ -45,6 +70,14 @@
     "provenance/lidar2025-index.gml": {
       "bytes": 485272,
       "sha256": "e346e65529219fcddc82875da9dd20a0ef95de4189d3ba837552caf674ecdc1f"
+    },
+    "provenance/nmt2019-index.gml": {
+      "bytes": 190672,
+      "sha256": "ac5e3b8cf407c086ac30075d2305506078755d7f8b0a421dc5dabc8fae4e9653"
+    },
+    "provenance/nmt2019-sources.json": {
+      "bytes": 12404,
+      "sha256": "a308f8fb8b9c6810b4fa386605bfb023df112c93069d77ac438acacd4894b574"
     },
     "provenance/nmt2025-index.gml": {
       "bytes": 48792,
@@ -62,9 +95,13 @@
       "bytes": 135120230,
       "sha256": "975318243054addc42b2d04f2539b318262a6ba23cd6066a71095f56acc91282"
     },
-    "terrain-mask.json": {
+    "terrain-mask-als2025.json": {
       "bytes": 859,
       "sha256": "118978ee5c939e6775555129e94aabd0c3bc7a5063a1132ceab5bbbe885af6d0"
+    },
+    "terrain-mask.json": {
+      "bytes": 668,
+      "sha256": "053685927ef8996170096d4ab8816f640bc102b557575c1c281602f1322f3ab8"
     },
     "terrain-provenance.json": {
       "bytes": 43929,
@@ -72,9 +109,9 @@
     }
   },
   "release": {
-    "tag": "terrain-2025-v1",
-    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/tag/terrain-2025-v1"
+    "tag": "terrain-v2",
+    "url": "https://github.com/dlubom/jktz-mapa-3d/releases/tag/terrain-v2"
   },
   "schema_version": 1,
-  "terrain_version": "terrain-2025-v1"
+  "terrain_version": "terrain-v2"
 }

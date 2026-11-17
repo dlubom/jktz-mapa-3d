@@ -57,17 +57,20 @@ def confirm(url, commit, expected_inputs, model_sha, publication_sha, attempts=2
             checksums = json.loads(body)["files"]
             if checksums["data/caves.json"]["sha256"] != model_sha:
                 raise ValueError("Public checksum inventory mismatch")
-            for name in ["kozia", "regional"]:
+            terrain_files = publication["terrain"]["files"]
+            for path, info in terrain_files.items():
+                if not path.endswith("/octree.bin"):
+                    continue
                 status, headers, fragment = read(
-                    url + f"data/{name}/octree.bin", {"Range": "bytes=0-31"}
+                    url + "data/" + path, {"Range": "bytes=0-31"}
                 )
-                total = publication["terrain"]["files"][f"{name}/octree.bin"]["bytes"]
+                total = info["bytes"]
                 if (
                     status != 206
                     or len(fragment) != 32
                     or headers.get("Content-Range") != f"bytes 0-31/{total}"
                 ):
-                    raise ValueError(f"Public Range mismatch for {name}")
+                    raise ValueError(f"Public Range mismatch for {path}")
             return {
                 "status": "PASS",
                 "url": url,

@@ -11,7 +11,8 @@ async function settled(page){
   for(let i=0;i<120;i++){
     await page.waitForTimeout(250);const s=await state(page);
     assert.equal(s.failures.length,0,s.failures.join('; '));
-    same=s.points===last?same+1:0;last=s.points;
+    const active=s.clouds.find(c=>c.key===s.source);
+    same=active?.rootLoaded && s.points===last?same+1:0;last=s.points;
     if(same>=4 && s.points>0)return s;
   }
   throw Error('View did not settle');
@@ -27,6 +28,8 @@ async function settled(page){
     context.on('response',r=>responses.push({url:r.url(),status:r.status()}));
     await page.goto(url);const initial=await settled(page);
     const publication=await (await page.request.get(new URL('publication.json',url).href)).json();
+    const hasNmt2019=Object.hasOwn(publication.terrain.clouds,'nmt2019');
+    const regionalSource=hasNmt2019?'nmt2019':'regional';
     assert.equal(initial.catalogSource.version,publication.catalog.version);
     assert.equal(initial.totalLegs,publication.counts.legs);
     assert.equal(await page.locator('#catalogRelease').textContent(),publication.catalog.version);
@@ -34,8 +37,30 @@ async function settled(page){
     for(const kind of ['below','above','region']){
       await page.click('#'+kind);const s=await settled(page);views.push(s);
       assert(s.points<=s.pointBudget);
-      if(kind==='region')assert.equal(s.renderedLegs,publication.counts.legs);
+      if(kind==='region'){
+        assert.equal(s.renderedLegs,publication.counts.legs);
+        assert.equal(s.source,regionalSource);
+      }
       await page.screenshot({path:path.join(output,kind+'.png')});
+    }
+    if(hasNmt2019){
+      const cave=await page.evaluate(()=>jktz.getModel().groups.find(g=>g.id==='Wysoka7Progow')?.id);
+      if(cave){
+        await page.selectOption('#cave',cave);
+        for(const kind of ['above','below']){
+          await page.click('#'+kind);
+          const s=await settled(page);
+          assert.equal(s.source,'nmt2019');
+          assert.deepEqual(s.clouds.filter(c=>c.visible).map(c=>c.key),['nmt2019']);
+          await page.screenshot({path:path.join(output,'nmt2019-'+kind+'.png')});
+        }
+      }
+      await page.click('#region');
+      await page.selectOption('#source','regional');
+      assert.equal((await settled(page)).source,'regional');
+      const newCloudRanges=responses.filter(r=>r.url.includes('/data/nmt2019/') && r.status===206);
+      assert(newCloudRanges.some(r=>r.url.endsWith('/hierarchy.bin')));
+      assert(newCloudRanges.some(r=>r.url.endsWith('/octree.bin')));
     }
     await page.selectOption('#cave',initial.selected);await page.click('#below');await settled(page);
     const before=await state(page);

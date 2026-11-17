@@ -177,8 +177,8 @@ def fetch(manifest_path: Path, cache: Path, output: Path) -> dict:
     }
 
 
-def load_mask(directory: Path) -> tuple[dict, bytes]:
-    metadata = json.loads((directory / "terrain-mask.json").read_text(encoding="utf-8"))
+def load_mask(directory: Path, name: str = "terrain-mask.json") -> tuple[dict, bytes]:
+    metadata = json.loads(tree_path(directory, name).read_text(encoding="utf-8"))
     if (
         metadata.get("schema_version") != 1
         or metadata.get("encoding") != "row-major-msb-first-bitpack-gzip"
@@ -233,6 +233,11 @@ def covered(metadata: dict, bits: bytes, x: float, y: float) -> bool:
 
 def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
     metadata, bits = load_mask(terrain_dir)
+    comparison = None
+    if "comparison_mask" in metadata:
+        comparison = load_mask(terrain_dir, metadata["comparison_mask"])
+        if comparison[0]["vertical_datum"] != metadata["vertical_datum"]:
+            raise ValueError("Native terrain masks must use the same vertical datum")
     caves = json.loads(caves_path.read_text(encoding="utf-8"))
     if caves.get("crs") != metadata["crs"] or not isinstance(
         caves.get("stations"), list
@@ -240,6 +245,7 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
         raise ValueError("Cave stations must use EPSG:2180 and contain a stations list")
     groups = {}
     count = 0
+    old_count = added = lost = 0
     for station in caves["stations"]:
         position = station["position"]
         if len(position) != 3 or not all(
@@ -248,6 +254,11 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
             raise ValueError("Station position must contain three finite coordinates")
         good = covered(metadata, bits, position[0], position[1])
         count += good
+        if comparison is not None:
+            old = covered(*comparison, position[0], position[1])
+            old_count += old
+            added += good and not old
+            lost += old and not good
         group = station.get("name", "").split(":")[0] or "_unscoped"
         item = groups.setdefault(group, {"stations": 0, "covered": 0})
         item["stations"] += 1
@@ -259,12 +270,16 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
         * abs(metadata["geotransform"][1] * metadata["geotransform"][5])
         / 1e6
     )
-    percentage = f"{percent:.1f}".replace(".", ",")
 
     def number(value: int) -> str:
         return f"{value:,}".replace(",", " ")
 
-    summary = f"{number(count)} z {number(total)} stacji ({percentage}%)"
+    def summarize(value: int) -> str:
+        percentage = f"{value / total * 100 if total else 0:.1f}".replace(".", ",")
+        return f"{number(value)} z {number(total)} stacji ({percentage}%)"
+
+    summary = summarize(count)
+    source = metadata.get("source", "ALS 2025")
     result = {
         "schema_version": 1,
         "terrain_version": metadata["terrain_version"],
@@ -281,6 +296,7 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
         "coveredStations": count,
         "percent": percent,
         "summary": summary,
+        "source": source,
         "groups": {
             "total": len(groups),
             "full": sum(v["covered"] == v["stations"] for v in groups.values()),
@@ -294,12 +310,20 @@ def coverage(terrain_dir: Path, caves_path: Path, output: Path) -> dict:
             "no elevation accuracy claim"
         ),
         "description": (
-            f"ALS 2025: {area:.2f} km² ważnego NMT w zapisanym zasięgu terenu; "
-            f"teren dostępny nad {summary}. "
-            "Pozostałe obszary są puste. Szczegół Koziej: 8 820 406 oryginalnych "
-            "punktów gruntu ALS 2025, klasa 2."
+            f"{source} obejmuje {summary}. Ważne komórki zajmują {area:.2f} km²."
         ),
     }
+    if comparison is not None:
+        result["als2025"] = {
+            "coveredStations": old_count,
+            "percent": old_count / total * 100 if total else 0.0,
+            "summary": summarize(old_count),
+            "additionalStations": added,
+            "onlyAls2025Stations": lost,
+        }
+        result["description"] += (
+            f" Regionalny NMT z ALS 2025 obejmuje {summarize(old_count)}."
+        )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"

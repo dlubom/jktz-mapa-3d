@@ -241,6 +241,44 @@ class NativeCoverageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SHA-256"):
             terrain.load_mask(self.root)
 
+    def test_expanded_model_reports_gain_and_loss_against_als(self):
+        old_metadata = dict(self.metadata)
+        save_json(self.root / "terrain-mask-als2025.json", old_metadata)
+        bits = bytes([0b01110000])
+        compressed = gzip.compress(bits, mtime=0)
+        (self.root / "nmt2019-mask.bin.gz").write_bytes(compressed)
+        save_json(
+            self.root / "terrain-mask.json",
+            dict(
+                self.metadata,
+                terrain_version="test-v2",
+                source="NMT 2019",
+                comparison_mask="terrain-mask-als2025.json",
+                file="nmt2019-mask.bin.gz",
+                compressed=record(compressed),
+                uncompressed_sha256=hashlib.sha256(bits).hexdigest(),
+            ),
+        )
+        source = self.root / "caves.json"
+        save_json(
+            source,
+            {
+                "crs": "EPSG:2180",
+                "stations": [
+                    {"name": f"A:{i}", "position": [x, y, 0]}
+                    for i, (x, y) in enumerate(
+                        [(10.5, 19.5), (11.5, 19.5), (12.5, 19.5), (10.5, 18.5)]
+                    )
+                ],
+            },
+        )
+        result = terrain.coverage(self.root, source, self.root / "coverage.json")
+        self.assertEqual(result["coveredStations"], 3)
+        self.assertEqual(result["als2025"]["coveredStations"], 2)
+        self.assertEqual(result["als2025"]["additionalStations"], 2)
+        self.assertEqual(result["als2025"]["onlyAls2025Stations"], 1)
+        self.assertIn("NMT 2019", result["description"])
+
     def test_wrong_crs_and_nonfinite_station_fail(self):
         source = self.root / "caves.json"
         save_json(source, {"crs": "EPSG:32634", "stations": []})

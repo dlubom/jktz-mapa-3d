@@ -2,7 +2,7 @@
 
 [Otwórz mapę 3D](https://dlubom.github.io/jktz-mapa-3d/) · [Mapa 2D](https://dlubom.github.io/jktz-mapa/) · [Kataster źródłowy](https://github.com/dlubom/Jaskiniowy-Kataster-Tatr-Zachodnich/releases/latest)
 
-Rozwojowa przeglądarka poligonów jaskiń i gruntu ALS 2025 w Potree-Next/WebGPU.
+Przeglądarka poligonów jaskiń i danych wysokościowych w Potree-Next/WebGPU.
 Pozwala oglądać jaskinie z góry i spod powierzchni. Nie przesuwa wysokości
 jaskiń ani terenu. Obsługa: lewy przycisk myszy obraca, prawy przesuwa, kółko
 przybliża. Domyślny budżet to 1 mln punktów; można wybrać 2 lub 4 mln.
@@ -15,11 +15,13 @@ Apple M4. Nie ma fallbacku WebGL; fizycznych telefonów nie zakwalifikowano.
 - **Kataster:** najnowszy stabilny GitHub Release JKTZ, rozpoznawany przy każdym
   nowym uruchomieniu publikacji. Build zachowuje ID wydania i zasobu, tag,
   SHA-256 paczki i modelu. Nie czyta modelu z ruchomej witryny Pages.
-- **Kozia:** 8 820 406 oryginalnych punktów ALS 2025 GUGiK, klasa gruntu,
-  z RGB. Regionalny kontekst: 3 860 578 węzłów NMT 2025 próbkowanych co 4 m.
-- **Zasięg:** niepełny. Dla JKTZ v2.0.1 ważny NMT obejmuje 35,3% stacji;
-  kolejny build przelicza ten wskaźnik dla aktualnego modelu. Braki pozostają
-  puste. Szczegóły i manifest źródeł: [docs/TERRAIN.md](docs/TERRAIN.md).
+- **Widok regionalny:** NMT GUGiK ze zdjęć lotniczych z 2019 r., siatka 5 m.
+  Dla JKTZ v2.0.1 obejmuje 18 323 z 18 541 stacji (98,8%). Brak danych nad
+  Nova Kresanica i Občasná Vyvieračka.
+- **ALS 2025:** szczegół Koziej zawiera 8 820 406 punktów gruntu z RGB.
+  Osobna warstwa regionalna zawiera 3 860 578 węzłów NMT co 4 m i obejmuje
+  35,3% stacji. Build przelicza pokrycie dla aktualnego modelu.
+  [Pochodzenie i odtworzenie terenu](docs/TERRAIN.md).
 - XY sceny: EPSG:2180; Z terenu: PL-EVRF2007-NH. Z modelu zachowano ze źródła;
   zgodność datum całego modelu pozostaje niepotwierdzona.
 
@@ -48,7 +50,7 @@ python scripts/serve.py
 ```
 
 Adres: <http://127.0.0.1:8768/jktz-mapa-3d/>. Pierwsze pobranie obejmuje paczkę
-ALS i model katastru. Gotowa witryna zajmuje około 450 MB. `site.py build`
+terenu i model katastru. Gotowa witryna zajmuje około 617 MB. `site.py build`
 odtwarza aplikację i zachowuje przygotowane chmury. Pliki źródłowe katastru
 i chmur pozostają nienaruszone.
 
@@ -101,6 +103,6 @@ repozytorium. [LICENSE](LICENSE); biblioteki w upstream mają własne licencje.
 Interfejs wskazuje źródła konkretnego opublikowanego SHA.
 
 Poligony: autorzy Jaskiniowego Katastru Tatr Zachodnich, **CC BY-SA 4.0**,
-zgodnie z wydaniem źródłowym. Teren: **GUGiK / Państwowy Zasób Geodezyjny
-i Kartograficzny — ALS 2025**, warunki i pochodzenie w docs/TERRAIN.md.
+zgodnie z wydaniem źródłowym. Teren pochodzi z **GUGiK / Państwowego Zasobu
+Geodezyjnego i Kartograficznego**. [Warunki i pochodzenie](docs/TERRAIN.md).
 Licencja kodu nie zmienia warunków danych.
